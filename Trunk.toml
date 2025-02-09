@@ -1,0 +1,9 @@
+[build]
+target = "index.html"
+dist = "dist"
+
+[package.metadata.leptos]
+assets-dir = "public"
+
+[watch]
+watch = ["src", "public"]

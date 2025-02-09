@@ -1,0 +1,8 @@
+[package]
+name = "rust-berlin-leptos"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+
+[dependencies]
+leptos = { version = "0.7.5", features = ["csr"] }
