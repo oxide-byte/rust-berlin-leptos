@@ -1,0 +1,4 @@
+assets/** linguist-vendored
+templates/** linguist-vendored
+doc/** linguist-vendored
+server/static/** linguist-vendored

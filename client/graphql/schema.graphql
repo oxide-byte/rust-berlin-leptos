@@ -1,0 +1,35 @@
+schema {
+    query: QueryRoot
+}
+
+type QueryRoot {
+    meetupUrlList(filter: MeetupUrlFilter!): [MeetupUrl!]!
+    meetupUrlCount(filter: MeetupUrlFilter!): MeetupUrlCount!
+}
+
+input MeetupUrlFilter {
+    domain: String
+    title: String
+    url: String
+    description: String
+}
+
+type MeetupUrlCount {
+    count: Int!
+}
+
+type MeetupUrl {
+    uriUuid: String!
+    url: String!
+    scheme: String!
+    host: String!
+    path: String!
+    liveStatus: String!
+    title: String!
+    autoDescr: String!
+    manDescr: String!
+    creaUser: String!
+    creaTime: String!
+    modiUser: String!
+    modiTime: String!
+}
