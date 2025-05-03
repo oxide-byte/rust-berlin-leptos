@@ -1,0 +1,13 @@
+[build]
+target = "index.html"
+dist = "dist"
+
+[package.metadata.leptos]
+assets-dir = "public"
+
+[serve]
+port = 8081
+open = false
+
+[watch]
+watch = ["src", "public"]

@@ -1,0 +1,14 @@
+version: '3.8'
+
+services:
+  surrealdb:
+    image: surrealdb/surrealdb:v2.0.5
+    ports:
+      - 8000:8000
+    entrypoint:
+      - /surreal
+      - start
+      - --user
+      - root
+      - --pass
+      - root

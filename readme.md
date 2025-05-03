@@ -7,12 +7,28 @@ This implementation is a clone implementation of the Rust UserGroup
 
 Link to the group: https://berline.rs/
 
+Work in Progress...
+
 ## Implementation
 
 The Frameworks in use:
 
-* Leptos 7.5
+Frontend:
+
+* Leptos 0.7.8
+* Thaw 0.4.6
 * Tailwind 4.0
+* GraphQL Query
+
+Backend:
+
+* Axum 0.8.3
+* Tower 0.5.2 (Static Page Server)
+* Juniper Axum (GraphQL)
+
+Database:
+
+* SurrealDB
 
 ## Installation / Preparation
 

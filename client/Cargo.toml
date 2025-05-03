@@ -1,0 +1,23 @@
+[package]
+name = "rust-berlin-leptos"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+
+[dependencies]
+leptos = { version = "0.7.8", features = ["csr"] }
+thaw = { version = "0.4.6", features = ["csr"] }
+uuid = { version = "1.16.0", features = ["v4"]}
+chrono = { version = "0.4.39", features = ["serde", "wasm-bindgen"] }
+
+graphql_client = {version = "0.14.0", features = ["reqwest"]}
+# reqwest 12.x not compatible with graphql_client
+reqwest = "0.11.27"
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = "1.0.140"
+futures = "0.3.31"
+ws_stream_wasm = "0.7.4"
+wasm-bindgen-futures = "0.4.50"
+wasm-bindgen = "0.2.100"
+web-sys = "0.3.77"
+serde_derive = "1.0.219"
