@@ -1,7 +1,7 @@
 use juniper::graphql_object;
 use tracing::log::{Level, log};
 use crate::config::connect_db;
-use crate::graphql::{MeetupUrl, MeetupUrlCount, MeetupUrlFilter, ServerContext};
+use crate::graphql::{MeetupUrlCount, MeetupUrlFilter, MeetupUrlResponse, ServerContext, Page};
 use crate::repository::{count_url, select_url};
 
 #[derive(Clone, Copy, Debug)]
@@ -12,13 +12,24 @@ pub struct Query;
 impl Query {
     async fn meetup_url_list (
         #[graphql(context)] _server_context: &ServerContext,
-        filter: MeetupUrlFilter) -> Vec<MeetupUrl> {
+        filter: MeetupUrlFilter) -> MeetupUrlResponse {
         log!(Level::Info, "Received request query: {:?}", filter);
 
         let client = connect_db().await;
-        let result = select_url(&client, filter).await;
+        let result = select_url(&client, filter.clone())
+            .await
+            .unwrap_or(Vec::new());
 
-        result.unwrap_or(Vec::new())
+        let count = count_url(&client, filter).await.unwrap_or(0);
+
+        MeetupUrlResponse {
+            result,
+            page: Page {
+                size: 0,
+                current: 0,
+                total: count
+            }
+        }
     }
 
     async fn meetup_url_count (

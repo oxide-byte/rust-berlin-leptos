@@ -9,6 +9,7 @@ use crate::graphql::meetup_url_graph_ql::fetch_meetup_url_data;
 pub fn EventTable() -> impl IntoView {
 
     let page = RwSignal::new(1);
+    let max_size = RwSignal::new("10".to_string());
     let filter_domain = RwSignal::new(String::from(""));
     let filter_title = RwSignal::new(String::from(""));
     let filter_url = RwSignal::new(String::from(""));
@@ -78,10 +79,14 @@ pub fn EventTable() -> impl IntoView {
                          </For>
                       </TableBody>
                       <tfoot>
-                        <Space vertical=true>
-                            <div>"Page: " {move || page.get()}</div>
-                            <Pagination page page_count=10 />
-                        </Space>
+                        <Flex>
+                        <Pagination page page_count=10 />
+                        <Select value=max_size default_value="10">
+                            <option>"10"</option>
+                            <option>"50"</option>
+                            <option>"ALL"</option>
+                        </Select>
+                        </Flex>
                       </tfoot>
                   </Table>
                 }})}

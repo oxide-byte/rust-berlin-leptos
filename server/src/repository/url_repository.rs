@@ -94,20 +94,29 @@ pub async fn select_url(client: &Surreal<Client>, filter: MeetupUrlFilter) -> Re
 fn query_builder(filter: MeetupUrlFilter) -> String {
     let mut cond = "".to_string();
 
-    if filter.description.is_some() {
-        cond = format!(" {} AND string::matches(auto_descr,'{}') ", cond, filter.description.unwrap())
+    if let Some(description) = filter.description {
+        cond = format!(" {} AND string::matches(auto_descr,'{}') ", cond, description)
     }
 
-    if filter.domain.is_some() {
-        cond = format!(" {} AND string::matches(host,'{}') ", cond, filter.domain.unwrap())
+    if let Some(domain) = filter.domain {
+        cond = format!(" {} AND string::matches(host,'{}') ", cond, domain)
     }
 
-    if filter.url.is_some() {
-        cond = format!(" {} AND string::matches(url,'{}') ", cond, filter.url.unwrap())
+    if let Some(url) = filter.url {
+        cond = format!(" {} AND string::matches(url,'{}') ", cond, url)
     }
 
-    if filter.title.is_some() {
-        cond = format!(" {} AND string::matches(title,'{}') ", cond, filter.title.unwrap())
+    if let Some(title) = filter.title {
+        cond = format!(" {} AND string::matches(title,'{}') ", cond, title)
+    }
+    
+    if let Some(page) = filter.pagination {
+        if let Some(current) = page.current {
+            cond = format!(" {} START AT {}", cond, current)
+        }
+        if let Some(size) = page.size {
+            cond = format!(" {} LIMIT BY {}", cond, size)    
+        }
     }
     cond
 }
