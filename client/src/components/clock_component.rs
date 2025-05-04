@@ -1,9 +1,9 @@
-use leptos::prelude::*;
+use crate::models::gaphql_subscription::ClockSubscriptionResponse;
 use futures::{SinkExt, StreamExt};
+use leptos::prelude::*;
+use uuid::Uuid;
 use wasm_bindgen_futures::spawn_local;
 use ws_stream_wasm::*;
-use uuid::Uuid;
-use crate::models::gaphql_subscription::ClockSubscriptionResponse;
 
 // Leptos component
 #[component]
@@ -41,18 +41,16 @@ pub fn ClockComponent() -> impl IntoView {
             })).unwrap();
         wsio.send(WsMessage::Text(start_msg)).await.ok();
         write_clock.set("demo".to_string());
-        
+
         // Listen for messages
         while let Some(msg) = wsio.next().await {
-
             if let WsMessage::Text(data) = msg {
-
                 let v: ClockSubscriptionResponse = match serde_json::from_str(&*data) {
                     Ok(v) => v,
                     Err(_) => continue,
                 };
-                write_clock.set(format!("bb {:?}",&v));
-                
+                write_clock.set(format!("bb {:?}", &v));
+
                 if v.type_field == "next".to_string() && v.id == id {
                     write_clock.set(v.payload.data.clock.clock);
                 }

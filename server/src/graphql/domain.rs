@@ -1,8 +1,7 @@
 use juniper::{Context, GraphQLEnum, GraphQLInputObject, GraphQLObject};
 
 #[derive(Clone, Default)]
-pub struct ServerContext {
-}
+pub struct ServerContext {}
 
 impl Context for ServerContext {}
 
@@ -11,7 +10,7 @@ pub enum MeetupUrlSort {
     DOMAIN,
     TITLE,
     URL,
-    DESCRIPTION
+    DESCRIPTION,
 }
 
 #[derive(GraphQLInputObject, Debug, Clone)]
@@ -21,7 +20,7 @@ pub struct MeetupUrlFilter {
     pub url: Option<String>,
     pub description: Option<String>,
     pub pagination: Option<Pagination>,
-    pub sort: Option<MeetupUrlSort>
+    pub sort: Option<MeetupUrlSort>,
 }
 
 #[derive(GraphQLInputObject, Debug, Clone)]
@@ -44,7 +43,7 @@ pub struct MeetupUrl {
     pub crea_user: String,
     pub crea_time: String,
     pub modi_user: String,
-    pub modi_time: String
+    pub modi_time: String,
 }
 
 #[derive(GraphQLObject)]
@@ -57,15 +56,15 @@ pub struct Page {
 #[derive(GraphQLObject)]
 pub struct MeetupUrlResponse {
     pub(crate) result: Vec<MeetupUrl>,
-    pub(crate) page: Page
+    pub(crate) page: Page,
 }
 
 #[derive(GraphQLObject)]
 pub struct MeetupUrlCount {
-    pub count: i32
+    pub count: i32,
 }
 
 #[derive(GraphQLObject)]
 pub struct ClockBox {
-    pub clock: String
+    pub clock: String,
 }

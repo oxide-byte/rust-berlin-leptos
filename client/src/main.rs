@@ -2,8 +2,8 @@ mod components;
 mod models;
 mod graphql;
 
-use leptos::prelude::*;
 use crate::components::app::App;
+use leptos::prelude::*;
 use thaw::*;
 
 fn main() {

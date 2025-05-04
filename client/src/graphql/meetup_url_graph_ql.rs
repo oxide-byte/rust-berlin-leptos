@@ -1,8 +1,7 @@
+use crate::graphql::meetup_url_graph_ql::meet_up_url_query::MeetUpUrlQueryMeetupUrlListResult;
+use crate::models::event::Event;
 use graphql_client::{reqwest::post_graphql, GraphQLQuery};
 use ::reqwest::Client;
-use thaw::Pagination;
-use crate::graphql::meetup_url_graph_ql::meet_up_url_query::{MeetUpUrlQueryMeetupUrlListResult};
-use crate::models::event::Event;
 
 #[derive(GraphQLQuery)]
 #[graphql(
@@ -12,7 +11,6 @@ use crate::models::event::Event;
 pub struct MeetUpUrlQuery;
 
 pub async fn fetch_meetup_url_data() -> Vec<Event> {
-    
     let client = Client::builder().build().unwrap();
     let endpoint = "http://localhost:8080/graphql";
 
@@ -25,7 +23,7 @@ pub async fn fetch_meetup_url_data() -> Vec<Event> {
             current: 0,
             size: 10,
         }),
-        sort: None
+        sort: None,
     };
 
     let variables = meet_up_url_query::Variables {
@@ -43,13 +41,12 @@ pub async fn fetch_meetup_url_data() -> Vec<Event> {
         .map(|data| data.result)
         .map(|data| meetup_url_to_event(data))
         .unwrap_or_default()
-    
 }
 
 fn meetup_url_to_event(data: Vec<MeetUpUrlQueryMeetupUrlListResult>) -> Vec<Event> {
     data.iter()
-        .map(|e| Event{
-            id:e.uri_uuid.clone(),
+        .map(|e| Event {
+            id: e.uri_uuid.clone(),
             title: e.title.clone(),
             domain: e.host.clone(),
             url: e.url.clone(),

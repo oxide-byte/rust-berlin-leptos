@@ -1,5 +1,5 @@
-use leptos::prelude::*;
 use crate::components::clock_component::ClockComponent;
+use leptos::prelude::*;
 
 #[component]
 pub fn Footer() -> impl IntoView {

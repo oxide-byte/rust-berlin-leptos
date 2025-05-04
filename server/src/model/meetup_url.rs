@@ -14,5 +14,5 @@ pub struct MeetupUrl {
     pub crea_user: String,
     pub crea_time: String,
     pub modi_user: String,
-    pub modi_time: String
+    pub modi_time: String,
 }

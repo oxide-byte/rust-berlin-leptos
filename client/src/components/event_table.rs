@@ -1,13 +1,12 @@
+use crate::graphql::meetup_url_graph_ql::fetch_meetup_url_data;
+use crate::models::event::Event;
 use chrono::{DateTime, Utc};
 use leptos::logging::log;
 use leptos::prelude::*;
 use thaw::*;
-use crate::models::event::Event;
-use crate::graphql::meetup_url_graph_ql::fetch_meetup_url_data;
 
 #[component]
 pub fn EventTable() -> impl IntoView {
-
     let page = RwSignal::new(1);
     let max_size = RwSignal::new("10".to_string());
     let filter_domain = RwSignal::new(String::from(""));
@@ -15,7 +14,7 @@ pub fn EventTable() -> impl IntoView {
     let filter_url = RwSignal::new(String::from(""));
     let filter_description = RwSignal::new(String::from(""));
 
-    let refresh :RwSignal<DateTime<Utc>> = RwSignal::new(Utc::now());
+    let refresh: RwSignal<DateTime<Utc>> = RwSignal::new(Utc::now());
     let fetch_urls = LocalResource::new(move || load_data(refresh.get()));
 
     async fn load_data(_trigger: DateTime<Utc>) -> Vec<Event> {
@@ -24,10 +23,10 @@ pub fn EventTable() -> impl IntoView {
 
     let _effect_page = Effect::watch(
         move || page.get(),
-              move |new_page, _, _| {
-                  // Query new Page
-                  log!("Load new page [{}]", new_page);
-                  }, false, );
+        move |new_page, _, _| {
+            // Query new Page
+            log!("Load new page [{}]", new_page);
+        }, false, );
 
     view! {
           <div class="w-full mt-2 mb-2">

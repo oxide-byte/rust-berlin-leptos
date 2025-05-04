@@ -4,13 +4,12 @@ use std::fs;
 use std::io::BufReader;
 
 pub fn import_data() -> Vec<MeetupUrl> {
-
     let file = fs::File::open("../data/data.json")
         .expect("Error opening the file");
-    
+
     let reader = BufReader::new(file);
 
-    let json:Result<Vec<MeetupUrl>, Error> = serde_json::from_reader(reader);
+    let json: Result<Vec<MeetupUrl>, Error> = serde_json::from_reader(reader);
     if json.is_ok() {
         json.unwrap()
     } else {
@@ -21,8 +20,8 @@ pub fn import_data() -> Vec<MeetupUrl> {
 #[cfg(test)]
 mod tests {
     use crate::model::MeetupUrl;
-    use serde_json::Error;
     use crate::service::import_data;
+    use serde_json::Error;
 
     #[test]
     fn test_object() {
@@ -44,16 +43,15 @@ mod tests {
           }
         "#;
 
-        let result:Result<MeetupUrl, Error> = serde_json::from_str(data);
+        let result: Result<MeetupUrl, Error> = serde_json::from_str(data);
         assert_eq!(result.is_ok(), true);
         let url = result.unwrap();
         println!("{:?}", url);
     }
-    
+
     #[test]
     fn test_import() {
         let data = import_data();
         assert_eq!(data.is_empty(), false);
     }
-    
 }

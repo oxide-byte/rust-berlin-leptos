@@ -1,6 +1,6 @@
+use crate::graphql::{MeetupUrl, MeetupUrlFilter, ServerContext};
 use juniper::graphql_object;
-use tracing::log::{Level, log};
-use crate::graphql::{MeetupUrlFilter, MeetupUrl, ServerContext};
+use tracing::log::{log, Level};
 
 
 #[derive(Clone, Copy, Debug)]
@@ -9,13 +9,12 @@ pub struct Mutation;
 #[graphql_object]
 #[graphql_object(context = ServerContext)]
 impl Mutation {
-    
     fn add_meetup_url(
         #[graphql(context)] _server_context: &ServerContext,
         filter: MeetupUrlFilter) -> MeetupUrl {
         log!(Level::Info, "Received request: {:?}", filter);
 
-        MeetupUrl{
+        MeetupUrl {
             uri_uuid: "".to_string(),
             url: "".to_string(),
             scheme: "".to_string(),
@@ -37,7 +36,7 @@ impl Mutation {
         filter: MeetupUrlFilter) -> MeetupUrl {
         log!(Level::Info, "Received request: {:?}", filter);
 
-        MeetupUrl{
+        MeetupUrl {
             uri_uuid: "".to_string(),
             url: "".to_string(),
             scheme: "".to_string(),
@@ -59,7 +58,7 @@ impl Mutation {
         filter: MeetupUrlFilter) -> MeetupUrl {
         log!(Level::Info, "Received request: {:?}", filter);
 
-        MeetupUrl{
+        MeetupUrl {
             uri_uuid: "".to_string(),
             url: "".to_string(),
             scheme: "".to_string(),
