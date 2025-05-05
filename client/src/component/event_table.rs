@@ -1,64 +1,89 @@
-use crate::graphql::meetup_url_graph_ql::fetch_meetup_url_data;
-use crate::models::event::Event;
-use chrono::{DateTime, Utc};
-use leptos::logging::log;
+use std::ops::Div;
+use crate::graphql::meetup_url_graphql::fetch_meetup_url_data;
+use crate::model::event::Event;
 use leptos::prelude::*;
 use thaw::*;
+use crate::model::filter::Filter;
 
 #[component]
 pub fn EventTable() -> impl IntoView {
-    let page = RwSignal::new(1);
+    let page = RwSignal::new(1 as usize);
+    let page_count = RwSignal::new(0 as usize);
     let max_size = RwSignal::new("10".to_string());
     let filter_domain = RwSignal::new(String::from(""));
     let filter_title = RwSignal::new(String::from(""));
     let filter_url = RwSignal::new(String::from(""));
     let filter_description = RwSignal::new(String::from(""));
 
-    let refresh: RwSignal<DateTime<Utc>> = RwSignal::new(Utc::now());
-    let fetch_urls = LocalResource::new(move || load_data(refresh.get()));
+    let (filter, set_filter) = signal(Filter {page: Some(1), size: Some(10), ..Default::default()});
+    let fetch_urls = LocalResource::new(move || load_data(filter.get()));
 
-    async fn load_data(_trigger: DateTime<Utc>) -> Vec<Event> {
-        fetch_meetup_url_data().await
+    let fire_refresh = move || {
+        let mut new_filter = Filter::default();
+        if filter_domain.get() != "" {
+            new_filter.domain = Some(filter_domain.get());
+        };
+        if filter_title.get() != "" {
+            new_filter.title = Some(filter_title.get());
+        };
+        if filter_url.get() != "" {
+            new_filter.url = Some(filter_url.get());
+        };
+        if filter_description.get() != "" {
+            new_filter.description = Some(filter_description.get());
+        };
+        if max_size.get() != "ALL" {
+            new_filter.page = Some(page.get() as i64);
+            new_filter.size = Some(max_size.get().parse::<i64>().unwrap());
+        }
+        set_filter.set(new_filter);
+    };
+
+    async fn load_data(filter: Filter) -> (Vec<Event>,i64) {
+        fetch_meetup_url_data(filter).await
     }
-
-    let _effect_page = Effect::watch(
-        move || page.get(),
-        move |new_page, _, _| {
-            // Query new Page
-            log!("Load new page [{}]", new_page);
-        }, false, );
 
     view! {
           <div class="w-full mt-2 mb-2">
               <Suspense fallback=move || view! { <p>"Loading..."</p> }>
                 {move || Suspend::new(async move {
-                let urls = fetch_urls.await;
+                let (urls, count) = fetch_urls.await;
+
                 view! {
+                  <p> Count: {count} </p>
                   <Table class="w-full table-auto">
                       <TableHeader>
                         <TableRow>
                           <TableHeaderCell>
                             <div class="grid grid-flow-col grid-rows-2">
                                 <div>Domain</div>
-                                <div class="border ml-1 mr-1"><Input value=filter_domain/></div>
+                                <div class="border ml-1 mr-1"
+                                    ><Input value=filter_domain on:change = move |event| {fire_refresh();}/>
+                                </div>
                             </div>
                           </TableHeaderCell>
                           <TableHeaderCell>
                             <div class="grid grid-flow-col grid-rows-2">
                                 <div>Title</div>
-                                <div class="border ml-1 mr-1"><Input value=filter_title/></div>
+                                <div class="border ml-1 mr-1">
+                                    <Input value=filter_title on:change = move |event| {fire_refresh();}/>
+                                </div>
                             </div>
                           </TableHeaderCell>
                           <TableHeaderCell>
                             <div class="grid grid-flow-col grid-rows-2">
                                 <div>URL</div>
-                                <div class="border ml-1 mr-1"><Input value=filter_url/></div>
+                                <div class="border ml-1 mr-1">
+                                    <Input value=filter_url on:change = move |event| {fire_refresh();}/>
+                                </div>
                             </div>
                           </TableHeaderCell>
                           <TableHeaderCell>
                             <div class="grid grid-flow-col grid-rows-2">
                                 <div>Description</div>
-                                <div class="border ml-1 mr-1"><Input value=filter_description/></div>
+                                <div class="border ml-1 mr-1">
+                                    <Input value=filter_description on:change = move |event| {fire_refresh();}/>
+                                </div>
                             </div>
                           </TableHeaderCell>
                         </TableRow>
@@ -79,8 +104,8 @@ pub fn EventTable() -> impl IntoView {
                       </TableBody>
                       <tfoot>
                         <Flex>
-                        <Pagination page page_count=10 />
-                        <Select value=max_size default_value="10">
+                        <Pagination page page_count on:click = move |event| {fire_refresh();} />
+                        <Select value=max_size default_value="10" on:change = move |_event| {fire_refresh();} >
                             <option>"10"</option>
                             <option>"50"</option>
                             <option>"ALL"</option>

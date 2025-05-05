@@ -1,6 +1,6 @@
 use juniper::{Context, GraphQLEnum, GraphQLInputObject, GraphQLObject};
 
-#[derive(Clone, Default)]
+#[derive(Debug, Clone, Default)]
 pub struct ServerContext {}
 
 impl Context for ServerContext {}
@@ -29,7 +29,7 @@ pub struct Pagination {
     pub size: Option<i32>,
 }
 
-#[derive(GraphQLObject)]
+#[derive(GraphQLObject, Debug, Clone)]
 pub struct MeetupUrl {
     pub uri_uuid: String,
     pub url: String,
@@ -46,20 +46,20 @@ pub struct MeetupUrl {
     pub modi_time: String,
 }
 
-#[derive(GraphQLObject)]
+#[derive(GraphQLObject, Debug, Clone)]
 pub struct Page {
     pub current: i32,
     pub size: i32,
     pub total: i32,
 }
 
-#[derive(GraphQLObject)]
+#[derive(GraphQLObject, Debug, Clone)]
 pub struct MeetupUrlResponse {
     pub(crate) result: Vec<MeetupUrl>,
     pub(crate) page: Page,
 }
 
-#[derive(GraphQLObject)]
+#[derive(GraphQLObject, Debug, Clone)]
 pub struct MeetupUrlCount {
     pub count: i32,
 }

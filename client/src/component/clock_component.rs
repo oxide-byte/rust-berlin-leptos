@@ -1,4 +1,4 @@
-use crate::models::gaphql_subscription::ClockSubscriptionResponse;
+use crate::graphql::subscription_graphql::ClockSubscriptionResponse;
 use futures::{SinkExt, StreamExt};
 use leptos::prelude::*;
 use uuid::Uuid;

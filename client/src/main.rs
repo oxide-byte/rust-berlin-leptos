@@ -1,8 +1,8 @@
-mod components;
-mod models;
+mod component;
+mod model;
 mod graphql;
 
-use crate::components::app::App;
+use crate::component::app::App;
 use leptos::prelude::*;
 use thaw::*;
 

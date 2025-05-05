@@ -1,7 +1,8 @@
-use crate::graphql::meetup_url_graph_ql::meet_up_url_query::MeetUpUrlQueryMeetupUrlListResult;
-use crate::models::event::Event;
+use crate::graphql::meetup_url_graphql::meet_up_url_query::MeetUpUrlQueryMeetupUrlListResult;
+use crate::model::event::Event;
 use graphql_client::{reqwest::post_graphql, GraphQLQuery};
 use ::reqwest::Client;
+use crate::model::filter::Filter;
 
 #[derive(GraphQLQuery)]
 #[graphql(
@@ -10,19 +11,25 @@ use ::reqwest::Client;
 )]
 pub struct MeetUpUrlQuery;
 
-pub async fn fetch_meetup_url_data() -> Vec<Event> {
+pub async fn fetch_meetup_url_data(filter: Filter) -> (Vec<Event>, i64) {
     let client = Client::builder().build().unwrap();
     let endpoint = "http://localhost:8080/graphql";
-
+    
+    let page = if filter.page.is_none() {
+        None
+    } else {
+        Option::from(meet_up_url_query::Pagination {
+            current: filter.page.unwrap(),
+            size: filter.size.unwrap(),
+        })
+    };
+    
     let filter = meet_up_url_query::MeetupUrlFilter {
-        domain: None,
-        title: None,
-        url: None,
-        description: None,
-        pagination: Option::from(meet_up_url_query::Pagination {
-            current: 0,
-            size: 10,
-        }),
+        domain: filter.domain,
+        title: filter.title,
+        url: filter.url,
+        description: filter.description,
+        pagination: page,
         sort: None,
     };
 
@@ -35,12 +42,14 @@ pub async fn fetch_meetup_url_data() -> Vec<Event> {
         .await
         .expect("Failed to execute GraphQL query");
 
-    response
-        .data
-        .map(|data| data.meetup_url_list)
-        .map(|data| data.result)
-        .map(|data| meetup_url_to_event(data))
-        .unwrap_or_default()
+    if let Some(data) = response.data {
+        (
+            meetup_url_to_event(data.meetup_url_list.result),
+            data.meetup_url_count.count as i64,
+        )
+    } else {
+        (Vec::new(), 0)
+    }
 }
 
 fn meetup_url_to_event(data: Vec<MeetUpUrlQueryMeetupUrlListResult>) -> Vec<Event> {
