@@ -1,21 +1,23 @@
-use std::ops::Div;
+use crate::component::event_table_delete::EventTableDelete;
+use crate::component::event_table_edit::EventTableEdit;
 use crate::graphql::meetup_url_graphql::fetch_meetup_url_data;
 use crate::model::event::Event;
-use leptos::prelude::*;
-use thaw::*;
 use crate::model::filter::Filter;
+use leptos::prelude::*;
+use std::ops::Div;
+use thaw::*;
 
 #[component]
 pub fn EventTable() -> impl IntoView {
-    let page = RwSignal::new(1 as usize);
-    let page_count = RwSignal::new(0 as usize);
+    let page = RwSignal::new(0 as usize);
+    let page_count = RwSignal::new(3 as usize);
     let max_size = RwSignal::new("10".to_string());
     let filter_domain = RwSignal::new(String::from(""));
     let filter_title = RwSignal::new(String::from(""));
     let filter_url = RwSignal::new(String::from(""));
     let filter_description = RwSignal::new(String::from(""));
 
-    let (filter, set_filter) = signal(Filter {page: Some(1), size: Some(10), ..Default::default()});
+    let (filter, set_filter) = signal(Filter { page: Some(1), size: Some(10), ..Default::default() });
     let fetch_urls = LocalResource::new(move || load_data(filter.get()));
 
     let fire_refresh = move || {
@@ -39,7 +41,13 @@ pub fn EventTable() -> impl IntoView {
         set_filter.set(new_filter);
     };
 
-    async fn load_data(filter: Filter) -> (Vec<Event>,i64) {
+    let edit_item = move |item| {};
+
+    let delete_item = move |item| {
+        fire_refresh();
+    };
+
+    async fn load_data(filter: Filter) -> (Vec<Event>, i64) {
         fetch_meetup_url_data(filter).await
     }
 
@@ -50,7 +58,7 @@ pub fn EventTable() -> impl IntoView {
                 let (urls, count) = fetch_urls.await;
 
                 view! {
-                  <p> Count: {count} </p>
+                  <p> Count: <strong>{count}</strong> item(s) in Database</p>
                   <Table class="w-full table-auto">
                       <TableHeader>
                         <TableRow>
@@ -86,6 +94,13 @@ pub fn EventTable() -> impl IntoView {
                                 </div>
                             </div>
                           </TableHeaderCell>
+                          <TableHeaderCell>
+                            <div class="relative h-24 w-full">
+                                <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2">
+                                <Button appearance=ButtonAppearance::Primary>"ADD ENTRY"</Button>
+                                </div>
+                            </div>
+                          </TableHeaderCell>
                         </TableRow>
                       </TableHeader>
                       <TableBody>
@@ -99,6 +114,14 @@ pub fn EventTable() -> impl IntoView {
                                 <TableCell>{{event.title}}</TableCell>
                                 <TableCell><Link href=event.url.clone()>{{event.url.clone()}}</Link></TableCell>
                                 <TableCell>{{event.description}}</TableCell>
+                                <TableCell>
+                                        <div class="basis-1/12 flex items-center justify-center">
+                                           <div class="flex flex-row-reverse space-x-4 space-x-reverse">
+                                                <EventTableEdit url_id={event.id.clone()} on_click=edit_item></EventTableEdit>
+                                                <EventTableDelete url_id={event.id.clone()} on_click=delete_item></EventTableDelete>
+                                           </div>
+                                        </div>
+                                </TableCell>
                             </TableRow>
                          </For>
                       </TableBody>

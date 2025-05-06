@@ -49,7 +49,7 @@ pub async fn insert_url(url: DbMeetupUrl, client: &Surreal<Client>) -> Result<()
 }
 
 pub async fn count_url(client: &Surreal<Client>, filter: MeetupUrlFilter) -> Result<i32, Error> {
-    let cond = query_builder(filter);
+    let cond = query_builder(filter, false);
 
     let query = format!("SELECT count() FROM url WHERE 1 = 1 {} GROUP BY count", cond);
     log!(Level::Info, "Query: {}", query);
@@ -61,7 +61,7 @@ pub async fn count_url(client: &Surreal<Client>, filter: MeetupUrlFilter) -> Res
 }
 
 pub async fn select_url(client: &Surreal<Client>, filter: MeetupUrlFilter) -> Result<Vec<GraphMeetupUrl>, Error> {
-    let cond = query_builder(filter);
+    let cond = query_builder(filter, true);
 
     let query = format!("SELECT * FROM url WHERE 1 = 1 {}", cond);
     log!(Level::Info, "Query: {}", query);
@@ -88,7 +88,7 @@ pub async fn select_url(client: &Surreal<Client>, filter: MeetupUrlFilter) -> Re
     Ok(urls)
 }
 
-fn query_builder(filter: MeetupUrlFilter) -> String {
+fn query_builder(filter: MeetupUrlFilter, pagination: bool) -> String {
     let mut cond = "".to_string();
 
     if let Some(description) = filter.description {
@@ -107,12 +107,14 @@ fn query_builder(filter: MeetupUrlFilter) -> String {
         cond = format!(" {} AND string::matches(title,'{}') ", cond, title)
     }
 
-    if let Some(page) = filter.pagination {
-        if let Some(current) = page.current {
-            cond = format!(" {} START AT {}", cond, current)
-        }
-        if let Some(size) = page.size {
-            cond = format!(" {} LIMIT BY {}", cond, size)
+    if pagination {
+        if let Some(page) = filter.pagination {
+            if let Some(current) = page.current {
+                cond = format!(" {} START AT {}", cond, current)
+            }
+            if let Some(size) = page.size {
+                cond = format!(" {} LIMIT BY {}", cond, size)
+            }
         }
     }
     cond

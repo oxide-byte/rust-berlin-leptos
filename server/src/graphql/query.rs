@@ -20,14 +20,14 @@ impl Query {
             .await
             .unwrap_or(Vec::new());
 
-        let count = count_url(&client, filter).await.unwrap_or(0);
+        let count = count_url(&client, filter).await;
 
         MeetupUrlResponse {
             result,
             page: Page {
                 size: 0,
                 current: 0,
-                total: count,
+                total: count.unwrap_or(0),
             },
         }
     }

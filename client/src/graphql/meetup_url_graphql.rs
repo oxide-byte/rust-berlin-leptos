@@ -1,8 +1,8 @@
 use crate::graphql::meetup_url_graphql::meet_up_url_query::MeetUpUrlQueryMeetupUrlListResult;
 use crate::model::event::Event;
+use crate::model::filter::Filter;
 use graphql_client::{reqwest::post_graphql, GraphQLQuery};
 use ::reqwest::Client;
-use crate::model::filter::Filter;
 
 #[derive(GraphQLQuery)]
 #[graphql(
@@ -14,7 +14,7 @@ pub struct MeetUpUrlQuery;
 pub async fn fetch_meetup_url_data(filter: Filter) -> (Vec<Event>, i64) {
     let client = Client::builder().build().unwrap();
     let endpoint = "http://localhost:8080/graphql";
-    
+
     let page = if filter.page.is_none() {
         None
     } else {
@@ -23,7 +23,7 @@ pub async fn fetch_meetup_url_data(filter: Filter) -> (Vec<Event>, i64) {
             size: filter.size.unwrap(),
         })
     };
-    
+
     let filter = meet_up_url_query::MeetupUrlFilter {
         domain: filter.domain,
         title: filter.title,

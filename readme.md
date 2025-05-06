@@ -11,6 +11,8 @@ Work in Progress...
 
 ## Implementation
 
+SALT = (S)urrealDB (A)xum (L)eptos (T)ailwind + GraphQL
+
 The Frameworks in use:
 
 Frontend:
