@@ -1,5 +1,6 @@
 use crate::component::event_table_delete::EventTableDelete;
 use crate::component::event_table_edit::EventTableEdit;
+use crate::graphql::meetup_url_graphql::delete_meetup_url_by_uuid_id;
 use crate::graphql::meetup_url_graphql::fetch_meetup_url_data;
 use crate::model::event::Event;
 use crate::model::filter::Filter;
@@ -44,7 +45,10 @@ pub fn EventTable() -> impl IntoView {
     let edit_item = move |item| {};
 
     let delete_item = move |item| {
-        fire_refresh();
+        leptos::task::spawn_local(async move {
+            delete_meetup_url_by_uuid_id(item).await;
+            fire_refresh();
+        });
     };
 
     async fn load_data(filter: Filter) -> (Vec<Event>, i64) {
@@ -58,7 +62,7 @@ pub fn EventTable() -> impl IntoView {
                 let (urls, count) = fetch_urls.await;
 
                 view! {
-                  <p> Count: <strong>{count}</strong> item(s) in Database</p>
+                  <p> Count: <strong>{count}</strong> item(s) selected</p>
                   <Table class="w-full table-auto">
                       <TableHeader>
                         <TableRow>

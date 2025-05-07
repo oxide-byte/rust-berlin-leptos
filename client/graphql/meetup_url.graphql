@@ -17,3 +17,7 @@ query MeetUpUrlQuery($filter: MeetupUrlFilter!) {
         count
     }
 }
+
+mutation MeetUpUrlMutation($id: String!) {
+    deleteMeetupUrl(id: $id)
+}

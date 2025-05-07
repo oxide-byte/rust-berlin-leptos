@@ -3,7 +3,7 @@ use crate::graphql::MeetupUrlFilter;
 use crate::model::MeetupUrl as DbMeetupUrl;
 use serde::Deserialize;
 use surrealdb::engine::remote::ws::Client;
-use surrealdb::sql::{Strand, Thing};
+use surrealdb::sql::{Id, Strand, Thing};
 use surrealdb::{Error, Surreal};
 use tracing::log::{log, Level};
 
@@ -58,6 +58,26 @@ pub async fn count_url(client: &Surreal<Client>, filter: MeetupUrlFilter) -> Res
         .query(query).await?.take("count")?;
 
     Ok(count.unwrap_or(0))
+}
+
+pub async fn delete_by_uri_uuid(client: &Surreal<Client>, uuid_id: String) -> Result<(), Error> {
+    let id = find_by_uri_uuid(client, uuid_id).await?;
+
+    let _result: Option<Record> = client
+        .delete(("url", id.to_string()))
+        .await?;
+
+    Ok(())
+}
+
+pub async fn find_by_uri_uuid(client: &Surreal<Client>, uuid_id: String) -> Result<Id, Error> {
+    let query = format!("SELECT * FROM url WHERE uri_uuid = '{}'", uuid_id);
+
+    let records: Vec<Record> = client.query(query).await?.take(0)?;
+
+    let record = records.first().unwrap();
+
+    Ok(record.id.id.clone())
 }
 
 pub async fn select_url(client: &Surreal<Client>, filter: MeetupUrlFilter) -> Result<Vec<GraphMeetupUrl>, Error> {

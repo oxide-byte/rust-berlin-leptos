@@ -2,7 +2,7 @@
 
 ## Purpose
 
-This implementation is a clone implementation of the Rust UserGroup 
+This implementation is a clone implementation of the Rust UserGroup
 **Rust Hack and Learn** in Berlin of the implementation: https://github.com/andreasklostermaier/halreslib (Original).
 
 Link to the group: https://berline.rs/
@@ -59,7 +59,8 @@ trunk serve --open
 trunk build --release
 ```
 
-If you like to publish it on GitHub, don't forget to fix manually the base URL and links in index.html of the generated files.
+If you like to publish it on GitHub, don't forget to fix manually the base URL and links in index.html of the generated
+files.
 
 https://oxide-byte.github.io/rust-berlin-leptos/
 
@@ -72,3 +73,5 @@ https://book.leptos.dev/
 For playing with Tailwind:
 
 https://play.tailwindcss.com/
+
+![alt text](docs/screenshot.png "screenshot")

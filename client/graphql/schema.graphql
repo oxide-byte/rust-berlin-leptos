@@ -1,10 +1,15 @@
 schema {
-    query: QueryRoot
+    query: QueryRoot,
+    mutation: MutationRoot
 }
 
 type QueryRoot {
     meetupUrlList(filter: MeetupUrlFilter!): MeetupUrlResponse!
     meetupUrlCount(filter: MeetupUrlFilter!): MeetupUrlCount!
+}
+
+type MutationRoot {
+    deleteMeetupUrl(id: String!): Int!
 }
 
 type MeetupUrlResponse {

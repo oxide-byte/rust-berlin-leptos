@@ -11,6 +11,13 @@ use ::reqwest::Client;
 )]
 pub struct MeetUpUrlQuery;
 
+#[derive(GraphQLQuery)]
+#[graphql(
+    schema_path = "graphql/schema.graphql",
+    query_path = "graphql/meetup_url.graphql",
+)]
+pub struct MeetUpUrlMutation;
+
 pub async fn fetch_meetup_url_data(filter: Filter) -> (Vec<Event>, i64) {
     let client = Client::builder().build().unwrap();
     let endpoint = "http://localhost:8080/graphql";
@@ -50,6 +57,21 @@ pub async fn fetch_meetup_url_data(filter: Filter) -> (Vec<Event>, i64) {
     } else {
         (Vec::new(), 0)
     }
+}
+
+pub async fn delete_meetup_url_by_uuid_id(uuid: String) {
+    let client = Client::builder().build().unwrap();
+    let endpoint = "http://localhost:8080/graphql";
+
+
+    let variables = meet_up_url_mutation::Variables {
+        id: uuid,
+    };
+
+    // Await the GraphQL request
+    let _response = post_graphql::<MeetUpUrlMutation, _>(&client, endpoint, variables)
+        .await
+        .expect("Failed to execute GraphQL query");
 }
 
 fn meetup_url_to_event(data: Vec<MeetUpUrlQueryMeetupUrlListResult>) -> Vec<Event> {

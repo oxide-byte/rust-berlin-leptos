@@ -55,8 +55,8 @@ pub struct Page {
 
 #[derive(GraphQLObject, Debug, Clone)]
 pub struct MeetupUrlResponse {
-    pub(crate) result: Vec<MeetupUrl>,
-    pub(crate) page: Page,
+    pub result: Vec<MeetupUrl>,
+    pub page: Page,
 }
 
 #[derive(GraphQLObject, Debug, Clone)]

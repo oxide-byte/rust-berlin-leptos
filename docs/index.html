@@ -1,23 +1,31 @@
 <!DOCTYPE html>
 <html lang="en">
-<link rel="stylesheet" href="/rust-berlin-leptos/tailwind-c226d3fe20627e28.css" integrity="sha384&#x2D;r37lzzNZuCuTwSe0dDm0Jg&#x2F;jsVw82ThTDLiTXo9Pp3iMqasqr7SPPHl0G0ZNvGqm"/>
+<link href="/rust-berlin-leptos/tailwind-c226d3fe20627e28.css"
+      integrity="sha384&#x2D;r37lzzNZuCuTwSe0dDm0Jg&#x2F;jsVw82ThTDLiTXo9Pp3iMqasqr7SPPHl0G0ZNvGqm"
+      rel="stylesheet"/>
 
 <head>
     <title>Berlin Rust Hack&Learn Web Resources</title>
     <base href="/rust-berlin-leptos/">
-    <link rel="modulepreload" href="/rust-berlin-leptos/rust-berlin-leptos-dda799be51577435.js" crossorigin="anonymous" integrity="sha384-aVLKTIzdDNsx6GVcCnA+z/bjAES2i194t460uZZv5ywWAhffMJ3KszBfIKhYUZUX">
-    <link rel="preload" href="/rust-berlin-leptos/rust-berlin-leptos-dda799be51577435_bg.wasm" crossorigin="anonymous" integrity="sha384-aoNURsAmRsWLq8yNWUpwHkHE8ZUgf4a10q4t7pGk9Gj62P9uiiAVBCreoz3lCleV" as="fetch" type="application/wasm">
+    <link crossorigin="anonymous" href="/rust-berlin-leptos/rust-berlin-leptos-dda799be51577435.js"
+          integrity="sha384-aVLKTIzdDNsx6GVcCnA+z/bjAES2i194t460uZZv5ywWAhffMJ3KszBfIKhYUZUX"
+          rel="modulepreload">
+    <link as="fetch" crossorigin="anonymous" href="/rust-berlin-leptos/rust-berlin-leptos-dda799be51577435_bg.wasm"
+          integrity="sha384-aoNURsAmRsWLq8yNWUpwHkHE8ZUgf4a10q4t7pGk9Gj62P9uiiAVBCreoz3lCleV" rel="preload"
+          type="application/wasm">
 </head>
 <body>
 <script type="module">
-import init, * as bindings from '/rust-berlin-leptos/rust-berlin-leptos-dda799be51577435.js';
-const wasm = await init({ module_or_path: '/rust-berlin-leptos/rust-berlin-leptos-dda799be51577435_bg.wasm' });
+    import init, * as bindings from '/rust-berlin-leptos/rust-berlin-leptos-dda799be51577435.js';
+
+    const wasm = await init({module_or_path: '/rust-berlin-leptos/rust-berlin-leptos-dda799be51577435_bg.wasm'});
 
 
-window.wasmBindings = bindings;
+    window.wasmBindings = bindings;
 
 
-dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
+    dispatchEvent(new CustomEvent("TrunkApplicationStarted", {detail: {wasm}}));
 
-</script></body>
+</script>
+</body>
 </html>
