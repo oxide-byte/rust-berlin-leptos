@@ -1,7 +1,7 @@
-use chrono::Utc;
-use crate::graphql::{MeetupUrl as GraphMeetupUrl, MeetupUrl, UpsertMeetupUrl};
 use crate::graphql::MeetupUrlFilter;
+use crate::graphql::{MeetupUrl as GraphMeetupUrl, MeetupUrl, UpsertMeetupUrl};
 use crate::model::MeetupUrl as DbMeetupUrl;
+use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use surrealdb::engine::remote::ws::Client;
 use surrealdb::sql::{Id, Strand, Thing};
@@ -72,7 +72,6 @@ pub async fn delete_by_uri_uuid(client: &Surreal<Client>, uuid_id: String) -> Re
 }
 
 pub async fn insert_meetup_url(client: &Surreal<Client>, data: UpsertMeetupUrl) -> Result<MeetupUrl, Error> {
-
     let now = Utc::now().to_string();
 
     let meetup_url = DbMeetupUrl {
@@ -104,7 +103,6 @@ pub async fn insert_meetup_url(client: &Surreal<Client>, data: UpsertMeetupUrl) 
 }
 
 pub async fn update_meetup_url(client: &Surreal<Client>, data: UpsertMeetupUrl) -> Result<MeetupUrl, Error> {
-
     let now = Utc::now().to_string();
 
     let query = format!("SELECT * FROM url WHERE uri_uuid = '{}'", data.uri_uuid.clone().unwrap());
@@ -112,7 +110,7 @@ pub async fn update_meetup_url(client: &Surreal<Client>, data: UpsertMeetupUrl) 
     let records: Vec<Record> = client.query(query).await?.take(0)?;
 
     let record = records.first().unwrap();
-    
+
     let update = Record {
         id: record.id.clone(),
         uri_uuid: record.uri_uuid.clone(),
@@ -129,7 +127,7 @@ pub async fn update_meetup_url(client: &Surreal<Client>, data: UpsertMeetupUrl) 
         modi_user: Strand::from("API_UPDATE".to_string()),
         modi_time: Strand::from(now),
     };
-    
+
     let updated: Vec<Record> = client
         .update("url")
         .content(update)

@@ -1,17 +1,19 @@
+use crate::model::meetup_url_edit::{MeetupUrlEdit, MeetupUrlEditMode};
 use leptos::html::Input;
 use leptos::prelude::*;
-use crate::model::meetup_url_edit::{MeetupUrlEdit, MeetupUrlEditMode};
 
 #[component]
-pub fn EventTableModal<F, R>(#[prop(into)] meetup_url: RwSignal<MeetupUrlEdit>, mode: MeetupUrlEditMode, on_close_modal: F, on_cancel_modal: R) -> impl IntoView
+pub fn EventTableModal<F, R>(#[prop(
+    into
+)] meetup_url: RwSignal<MeetupUrlEdit>, mode: MeetupUrlEditMode, on_close_modal: F, on_cancel_modal: R) -> impl IntoView
 where
     F: Fn(MeetupUrlEdit) + 'static + Copy,
-    R: Fn() + 'static + Copy, {
-
+    R: Fn() + 'static + Copy,
+{
     let input_field_class = "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline";
-    
+
     let (mode, _set_mode) = signal(mode);
-    
+
     let (title, _set_title) = signal(meetup_url.get().title);
     let title_node: NodeRef<Input> = NodeRef::new();
 
@@ -25,7 +27,6 @@ where
     let url_node: NodeRef<Input> = NodeRef::new();
 
     let submit = move |_| {
-
         let title = title_node
             .get()
             .expect("<title> should be mounted")
@@ -45,7 +46,7 @@ where
             .get()
             .expect("<domain> should be mounted")
             .value();
-        
+
         let mut rtn = meetup_url.get();
         rtn.mode = mode.get();
         rtn.title = Some(title);
@@ -59,7 +60,7 @@ where
     let cancel = move |_| {
         on_cancel_modal();
     };
-    
+
     view! {
         <div class="fixed inset-0 z-50 flex items-center justify-center bg-gray-600 bg-opacity-90">
             <div class="block rounded-lg bg-white w-2/5 p-4 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] z-70">

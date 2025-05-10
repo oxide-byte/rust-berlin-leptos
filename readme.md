@@ -59,10 +59,10 @@ trunk serve --open
 trunk build --release
 ```
 
-The files generated in the client folder /dist can be moved on the 
+The files generated in the client folder /dist can be moved on the
 Server side to the folder /static. To access to the files from Axum
 you need to manually adapt in the index.html file the relative path
-for the links as the wasm file: 
+for the links as the wasm file:
 
 Example:
 

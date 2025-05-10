@@ -1,9 +1,9 @@
 use crate::config::connect_db;
 use crate::graphql::{MeetupUrl, ServerContext, UpsertMeetupUrl};
 use crate::repository::{delete_by_uri_uuid, insert_meetup_url, update_meetup_url};
+use crate::service::init_database;
 use juniper::graphql_object;
 use tracing::log::{log, Level};
-use crate::service::{init_database};
 
 #[derive(Clone, Copy, Debug)]
 pub struct Mutation;
@@ -30,20 +30,18 @@ impl Mutation {
     async fn insert_meetup_url(
         #[graphql(context)] _server_context: &ServerContext,
         meetup_url: UpsertMeetupUrl) -> MeetupUrl {
-
         log!(Level::Info, "Received Insert request: {:?}", meetup_url);
 
         let client = connect_db().await;
 
         let result = insert_meetup_url(&client, meetup_url).await;
-        
+
         result.unwrap()
     }
 
     async fn update_meetup_url(
         #[graphql(context)] _server_context: &ServerContext,
         meetup_url: UpsertMeetupUrl) -> MeetupUrl {
-
         log!(Level::Info, "Received Update request: {:?}", meetup_url);
 
         let client = connect_db().await;
@@ -53,14 +51,14 @@ impl Mutation {
         result.unwrap()
     }
 
-    async fn init_database (
+    async fn init_database(
         #[graphql(context)] _server_context: &ServerContext) -> i32 {
         log!(Level::Info, "Init Database");
 
         let client = connect_db().await;
 
         init_database(&client).await;
-        
+
         1
     }
 }

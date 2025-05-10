@@ -1,8 +1,8 @@
 #[derive(Clone, Debug, Default, PartialOrd, PartialEq)]
 pub enum MeetupUrlEditMode {
     #[default]
-    INSERT, 
-    UPDATE
+    INSERT,
+    UPDATE,
 }
 #[derive(Clone, Debug, Default)]
 pub struct MeetupUrlEdit {

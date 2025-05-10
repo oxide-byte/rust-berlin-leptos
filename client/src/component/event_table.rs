@@ -1,15 +1,15 @@
-use leptos::logging::log;
 use crate::component::event_table_delete::EventTableDelete;
 use crate::component::event_table_edit::EventTableEdit;
-use crate::graphql::meetup_url_graphql::{delete_meetup_url_by_uuid_id, insert_meetup_event, update_meetup_event};
+use crate::component::event_table_modal::EventTableModal;
 use crate::graphql::meetup_url_graphql::fetch_meetup_url_data;
+use crate::graphql::meetup_url_graphql::{delete_meetup_url_by_uuid_id, insert_meetup_event, update_meetup_event};
 use crate::model::event::Event;
 use crate::model::filter::Filter;
-use leptos::prelude::*;
-use thaw::*;
-use crate::component::event_table_modal::EventTableModal;
 use crate::model::meetup_url_edit::MeetupUrlEdit;
 use crate::model::meetup_url_edit::MeetupUrlEditMode::{INSERT, UPDATE};
+use leptos::logging::log;
+use leptos::prelude::*;
+use thaw::*;
 
 #[component]
 pub fn EventTable() -> impl IntoView {
@@ -55,19 +55,19 @@ pub fn EventTable() -> impl IntoView {
     };
 
     let edit_item = move |item: Event| {
-       let edit = MeetupUrlEdit {
-           mode: UPDATE,
-           title: Some(item.title),
-           domain: Some(item.domain),
-           url: Some(item.url), 
-           description: Some(item.description),
+        let edit = MeetupUrlEdit {
+            mode: UPDATE,
+            title: Some(item.title),
+            domain: Some(item.domain),
+            url: Some(item.url),
+            description: Some(item.description),
         };
         meetup_url_select.set(edit);
         show_modal_mode.set(UPDATE);
         show_modal.set(true);
     };
 
-    let delete_item = move |item:Event| {
+    let delete_item = move |item: Event| {
         leptos::task::spawn_local(async move {
             delete_meetup_url_by_uuid_id(item.id).await;
             fire_refresh();
@@ -80,7 +80,7 @@ pub fn EventTable() -> impl IntoView {
             leptos::task::spawn_local(async move {
                 insert_meetup_event(item).await;
                 fire_refresh();
-            });        
+            });
         } else {
             log!("UPDATE {:?}", item);
             leptos::task::spawn_local(async move {
