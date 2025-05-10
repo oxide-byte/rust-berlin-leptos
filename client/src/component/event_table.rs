@@ -1,6 +1,7 @@
+use leptos::logging::log;
 use crate::component::event_table_delete::EventTableDelete;
 use crate::component::event_table_edit::EventTableEdit;
-use crate::graphql::meetup_url_graphql::delete_meetup_url_by_uuid_id;
+use crate::graphql::meetup_url_graphql::{delete_meetup_url_by_uuid_id, insert_meetup_event, update_meetup_event};
 use crate::graphql::meetup_url_graphql::fetch_meetup_url_data;
 use crate::model::event::Event;
 use crate::model::filter::Filter;
@@ -8,10 +9,12 @@ use leptos::prelude::*;
 use thaw::*;
 use crate::component::event_table_modal::EventTableModal;
 use crate::model::meetup_url_edit::MeetupUrlEdit;
+use crate::model::meetup_url_edit::MeetupUrlEditMode::{INSERT, UPDATE};
 
 #[component]
 pub fn EventTable() -> impl IntoView {
     let show_modal = RwSignal::new(false);
+    let show_modal_mode = RwSignal::new(INSERT);
     let meetup_url_select = RwSignal::new(MeetupUrlEdit::default());
     let page = RwSignal::new(0 as usize);
     let page_count = RwSignal::new(3 as usize);
@@ -47,17 +50,20 @@ pub fn EventTable() -> impl IntoView {
 
     let add_item = move |_e| {
         meetup_url_select.set(MeetupUrlEdit::default());
+        show_modal_mode.set(INSERT);
         show_modal.set(true);
     };
 
     let edit_item = move |item: Event| {
        let edit = MeetupUrlEdit {
+           mode: UPDATE,
            title: Some(item.title),
            domain: Some(item.domain),
            url: Some(item.url), 
            description: Some(item.description),
         };
         meetup_url_select.set(edit);
+        show_modal_mode.set(UPDATE);
         show_modal.set(true);
     };
 
@@ -69,6 +75,19 @@ pub fn EventTable() -> impl IntoView {
     };
 
     let close_modal = move |item: MeetupUrlEdit| {
+        if item.mode == INSERT {
+            log!("INSERT {:?}", item);
+            leptos::task::spawn_local(async move {
+                insert_meetup_event(item).await;
+                fire_refresh();
+            });        
+        } else {
+            log!("UPDATE {:?}", item);
+            leptos::task::spawn_local(async move {
+                update_meetup_event(item).await;
+                fire_refresh();
+            });
+        }
         show_modal.set(false);
     };
     let cancel_modal = move || {
@@ -125,7 +144,7 @@ pub fn EventTable() -> impl IntoView {
                           <TableHeaderCell>
                             <div class="relative h-24 w-full">
                                 <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2">
-                                <Button appearance=ButtonAppearance::Primary  on_click=add_item>"ADD ENTRY"</Button>
+                                <Button appearance=ButtonAppearance::Primary on_click=add_item>"ADD ENTRY"</Button>
                                 </div>
                             </div>
                           </TableHeaderCell>
@@ -175,7 +194,7 @@ pub fn EventTable() -> impl IntoView {
                 }})}
               </Suspense>
             <Show when = move || show_modal.get()>
-                <EventTableModal meetup_url=meetup_url_select on_close_modal=close_modal on_cancel_modal=cancel_modal/>
+                <EventTableModal meetup_url=meetup_url_select mode = show_modal_mode.get() on_close_modal=close_modal on_cancel_modal=cancel_modal/>
             </Show>
           </div>
       }
