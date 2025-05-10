@@ -1,5 +1,5 @@
-use leptos::prelude::*;
 use crate::model::event::Event;
+use leptos::prelude::*;
 
 #[component]
 pub fn EventTableDelete<F>(#[prop(into)] event: Event, on_click: F) -> impl IntoView

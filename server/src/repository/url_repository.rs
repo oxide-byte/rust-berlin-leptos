@@ -1,7 +1,7 @@
-use chrono::Utc;
-use crate::graphql::{MeetupUrl as GraphMeetupUrl, MeetupUrl, UpsertMeetupUrl};
 use crate::graphql::MeetupUrlFilter;
+use crate::graphql::{MeetupUrl as GraphMeetupUrl, MeetupUrl, UpsertMeetupUrl};
 use crate::model::MeetupUrl as DbMeetupUrl;
+use chrono::Utc;
 use serde::{Deserialize, Serialize};
 use surrealdb::engine::remote::ws::Client;
 use surrealdb::sql::{Id, Strand, Thing};
@@ -10,34 +10,32 @@ use tracing::log::{log, Level};
 
 #[derive(Debug, Serialize, Deserialize)]
 struct Record {
-    #[allow(dead_code)]
     id: Thing,
-    #[allow(dead_code)]
     uri_uuid: Strand,
-    #[allow(dead_code)]
     url: Strand,
-    #[allow(dead_code)]
     scheme: Strand,
-    #[allow(dead_code)]
     host: Strand,
-    #[allow(dead_code)]
     path: Strand,
-    #[allow(dead_code)]
     live_status: Strand,
-    #[allow(dead_code)]
     title: Strand,
-    #[allow(dead_code)]
     auto_descr: Strand,
-    #[allow(dead_code)]
     man_descr: Strand,
-    #[allow(dead_code)]
     crea_user: Strand,
-    #[allow(dead_code)]
     crea_time: Strand,
-    #[allow(dead_code)]
     modi_user: Strand,
-    #[allow(dead_code)]
     modi_time: Strand,
+}
+
+#[derive(Debug, Serialize, Deserialize)]
+struct UpdateRecord {
+    url: String,
+    host: String,
+    path: String,
+    title: String,
+    auto_descr: String,
+    man_descr: String,
+    modi_user: String,
+    modi_time: String,
 }
 
 pub async fn insert_init_meetup_url(url: DbMeetupUrl, client: &Surreal<Client>) -> Result<(), Error> {
@@ -72,7 +70,6 @@ pub async fn delete_by_uri_uuid(client: &Surreal<Client>, uuid_id: String) -> Re
 }
 
 pub async fn insert_meetup_url(client: &Surreal<Client>, data: UpsertMeetupUrl) -> Result<MeetupUrl, Error> {
-
     let now = Utc::now().to_string();
 
     let meetup_url = DbMeetupUrl {
@@ -104,7 +101,6 @@ pub async fn insert_meetup_url(client: &Surreal<Client>, data: UpsertMeetupUrl) 
 }
 
 pub async fn update_meetup_url(client: &Surreal<Client>, data: UpsertMeetupUrl) -> Result<MeetupUrl, Error> {
-
     let now = Utc::now().to_string();
 
     let query = format!("SELECT * FROM url WHERE uri_uuid = '{}'", data.uri_uuid.clone().unwrap());
@@ -112,30 +108,32 @@ pub async fn update_meetup_url(client: &Surreal<Client>, data: UpsertMeetupUrl) 
     let records: Vec<Record> = client.query(query).await?.take(0)?;
 
     let record = records.first().unwrap();
-    
-    let update = Record {
-        id: record.id.clone(),
-        uri_uuid: record.uri_uuid.clone(),
-        url: Strand::from(data.url.clone()),
-        scheme: record.scheme.clone(),
-        host: Strand::from(data.host.clone()),
-        path: record.path.clone(),
-        live_status: record.live_status.clone(),
-        title: Strand::from(data.title.clone()),
-        auto_descr: Strand::from(data.auto_descr.clone()),
-        man_descr: Strand::from(data.auto_descr.clone()),
-        crea_user: record.crea_user.clone(),
-        crea_time: record.crea_time.clone(),
-        modi_user: Strand::from("API_UPDATE".to_string()),
-        modi_time: Strand::from(now),
-    };
-    
-    let updated: Vec<Record> = client
-        .update("url")
-        .content(update)
-        .await.expect("Error Updating Record");
 
-    let rtn = updated.get(0)
+    let id = record.id.id.to_raw();
+
+    let update = UpdateRecord {
+        url: data.url.clone(),
+        host: data.host.clone(),
+        path: data.url.clone(),
+        title: data.title.clone(),
+        auto_descr: data.auto_descr.clone(),
+        man_descr: data.auto_descr.clone(),
+        modi_user: "API_UPDATE".to_string(),
+        modi_time: now,
+    };
+
+    println!("Update Record {:?} [{:?}]", id, update);
+    let updated: Option<Record> = client
+        .update(("url", id))
+        .merge(update)
+        .await
+        .map_err(|e| {
+            eprintln!("Error Updating Record: {:?}", e);
+            e
+        })?;
+
+    let rtn = updated
+        .as_ref()
         .map(map_record_to_graph_meetup_url())
         .unwrap();
 

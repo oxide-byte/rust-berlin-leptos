@@ -1,7 +1,7 @@
-use surrealdb::engine::remote::ws::Client;
-use surrealdb::Surreal;
 use crate::repository::insert_init_meetup_url;
 use crate::service::import_data;
+use surrealdb::engine::remote::ws::Client;
+use surrealdb::Surreal;
 
 pub async fn init_database(client: &Surreal<Client>) {
     let data = import_data();

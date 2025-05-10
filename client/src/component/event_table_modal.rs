@@ -1,17 +1,19 @@
+use crate::model::meetup_url_edit::MeetupUrlEdit;
 use leptos::html::Input;
 use leptos::prelude::*;
-use crate::model::meetup_url_edit::MeetupUrlEdit;
 
 #[component]
-pub fn EventTableModal<F, R>(#[prop(into)] meetup_url: RwSignal<MeetupUrlEdit>, on_close_modal: F, on_cancel_modal: R) -> impl IntoView
+pub fn EventTableModal<F, R>(#[prop(
+    into
+)] meetup_url: RwSignal<MeetupUrlEdit>, on_close_modal: F, on_cancel_modal: R) -> impl IntoView
 where
     F: Fn(MeetupUrlEdit) + 'static + Copy,
-    R: Fn() + 'static + Copy, {
-
-    let button_mod_class = "text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center mr-2";
-    let button_del_class = "text-white bg-red-700 hover:bg-red-800 focus:ring-4 focus:outline-none focus:ring-red-300 font-medium rounded-full text-sm p-2.5 text-center inline-flex items-center mr-2";
+    R: Fn() + 'static + Copy,
+{
     let input_field_class = "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline";
-    
+
+    let is_update = meetup_url.get().uri_uuid.is_some();
+
     let (title, _set_title) = signal(meetup_url.get().title);
     let title_node: NodeRef<Input> = NodeRef::new();
 
@@ -25,18 +27,44 @@ where
     let url_node: NodeRef<Input> = NodeRef::new();
 
     let submit = move |_| {
+        let title = title_node
+            .get()
+            .expect("<title> should be mounted")
+            .value();
+
+        let description = description_node
+            .get()
+            .expect("<description> should be mounted")
+            .value();
+
+        let url = url_node
+            .get()
+            .expect("<url> should be mounted")
+            .value();
+
+        let domain = domain_node
+            .get()
+            .expect("<domain> should be mounted")
+            .value();
+
         let mut rtn = meetup_url.get();
-        rtn.title = title.get();
-        rtn.description = description.get();
-        rtn.url = url.get();
-        rtn.domain = domain.get();
+
+        rtn.title = Some(title);
+        rtn.description = Some(description);
+        rtn.url = Some(url);
+        rtn.domain = Some(domain);
+
+        if is_update {
+            rtn.uri_uuid = meetup_url.get().uri_uuid;
+        };
+
         on_close_modal(rtn);
     };
 
     let cancel = move |_| {
         on_cancel_modal();
     };
-    
+
     view! {
         <div class="fixed inset-0 z-50 flex items-center justify-center bg-gray-600 bg-opacity-90">
             <div class="block rounded-lg bg-white w-2/5 p-4 shadow-[0_2px_15px_-3px_rgba(0,0,0,0.07),0_10px_20px_-2px_rgba(0,0,0,0.04)] z-70">
@@ -65,7 +93,7 @@ where
                         class=input_field_class
                         id="description"
                         type="text"
-                        value=title
+                        value=description
                         placeholder="Description"/>
                         
                     <label class="block text-gray-700 text-sm font-bold mb-2 mt-2" for="url">
@@ -76,7 +104,7 @@ where
                         class=input_field_class
                         id="url"
                         type="text"
-                        value=title
+                        value=url
                         placeholder="Url"/>
         
                     <label class="block text-gray-700 text-sm font-bold mb-2 mt-2" for="domain">

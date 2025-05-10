@@ -1,5 +1,5 @@
-use leptos::prelude::*;
 use crate::model::event::Event;
+use leptos::prelude::*;
 
 #[component]
 pub fn EventTableEdit<F>(#[prop(into)] event: Event, on_click: F) -> impl IntoView
@@ -12,7 +12,7 @@ where
     let edit = move |_| {
         on_click(event.get());
     };
-    
+
     view! {
         <button
             class=button_mod_class

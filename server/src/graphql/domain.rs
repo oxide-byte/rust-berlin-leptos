@@ -75,5 +75,5 @@ pub struct UpsertMeetupUrl {
     pub url: String,
     pub host: String,
     pub title: String,
-    pub auto_descr: String
+    pub auto_descr: String,
 }
