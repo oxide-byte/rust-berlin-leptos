@@ -5,11 +5,14 @@ use crate::graphql::meetup_url_graphql::fetch_meetup_url_data;
 use crate::model::event::Event;
 use crate::model::filter::Filter;
 use leptos::prelude::*;
-use std::ops::Div;
 use thaw::*;
+use crate::component::event_table_modal::EventTableModal;
+use crate::model::meetup_url_edit::MeetupUrlEdit;
 
 #[component]
 pub fn EventTable() -> impl IntoView {
+    let show_modal = RwSignal::new(false);
+    let meetup_url_select = RwSignal::new(MeetupUrlEdit::default());
     let page = RwSignal::new(0 as usize);
     let page_count = RwSignal::new(3 as usize);
     let max_size = RwSignal::new("10".to_string());
@@ -42,13 +45,34 @@ pub fn EventTable() -> impl IntoView {
         set_filter.set(new_filter);
     };
 
-    let edit_item = move |item| {};
+    let add_item = move |_e| {
+        meetup_url_select.set(MeetupUrlEdit::default());
+        show_modal.set(true);
+    };
 
-    let delete_item = move |item| {
+    let edit_item = move |item: Event| {
+       let edit = MeetupUrlEdit {
+           title: Some(item.title),
+           domain: Some(item.domain),
+           url: Some(item.url), 
+           description: Some(item.description),
+        };
+        meetup_url_select.set(edit);
+        show_modal.set(true);
+    };
+
+    let delete_item = move |item:Event| {
         leptos::task::spawn_local(async move {
-            delete_meetup_url_by_uuid_id(item).await;
+            delete_meetup_url_by_uuid_id(item.id).await;
             fire_refresh();
         });
+    };
+
+    let close_modal = move |item: MeetupUrlEdit| {
+        show_modal.set(false);
+    };
+    let cancel_modal = move || {
+        show_modal.set(false);
     };
 
     async fn load_data(filter: Filter) -> (Vec<Event>, i64) {
@@ -70,7 +94,7 @@ pub fn EventTable() -> impl IntoView {
                             <div class="grid grid-flow-col grid-rows-2">
                                 <div>Domain</div>
                                 <div class="border ml-1 mr-1"
-                                    ><Input value=filter_domain on:change = move |event| {fire_refresh();}/>
+                                    ><Input value=filter_domain on:change = move |_event| {fire_refresh();}/>
                                 </div>
                             </div>
                           </TableHeaderCell>
@@ -78,7 +102,7 @@ pub fn EventTable() -> impl IntoView {
                             <div class="grid grid-flow-col grid-rows-2">
                                 <div>Title</div>
                                 <div class="border ml-1 mr-1">
-                                    <Input value=filter_title on:change = move |event| {fire_refresh();}/>
+                                    <Input value=filter_title on:change = move |_event| {fire_refresh();}/>
                                 </div>
                             </div>
                           </TableHeaderCell>
@@ -86,7 +110,7 @@ pub fn EventTable() -> impl IntoView {
                             <div class="grid grid-flow-col grid-rows-2">
                                 <div>URL</div>
                                 <div class="border ml-1 mr-1">
-                                    <Input value=filter_url on:change = move |event| {fire_refresh();}/>
+                                    <Input value=filter_url on:change = move |_event| {fire_refresh();}/>
                                 </div>
                             </div>
                           </TableHeaderCell>
@@ -94,14 +118,14 @@ pub fn EventTable() -> impl IntoView {
                             <div class="grid grid-flow-col grid-rows-2">
                                 <div>Description</div>
                                 <div class="border ml-1 mr-1">
-                                    <Input value=filter_description on:change = move |event| {fire_refresh();}/>
+                                    <Input value=filter_description on:change = move |_event| {fire_refresh();}/>
                                 </div>
                             </div>
                           </TableHeaderCell>
                           <TableHeaderCell>
                             <div class="relative h-24 w-full">
                                 <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2">
-                                <Button appearance=ButtonAppearance::Primary>"ADD ENTRY"</Button>
+                                <Button appearance=ButtonAppearance::Primary  on_click=add_item>"ADD ENTRY"</Button>
                                 </div>
                             </div>
                           </TableHeaderCell>
@@ -113,25 +137,33 @@ pub fn EventTable() -> impl IntoView {
                             key=|item| item.id.clone()
                             let:event
                         >
-                            <TableRow>
-                                <TableCell>{{event.domain}}</TableCell>
-                                <TableCell>{{event.title}}</TableCell>
-                                <TableCell><Link href=event.url.clone()>{{event.url.clone()}}</Link></TableCell>
-                                <TableCell>{{event.description}}</TableCell>
-                                <TableCell>
-                                        <div class="basis-1/12 flex items-center justify-center">
-                                           <div class="flex flex-row-reverse space-x-4 space-x-reverse">
-                                                <EventTableEdit url_id={event.id.clone()} on_click=edit_item></EventTableEdit>
-                                                <EventTableDelete url_id={event.id.clone()} on_click=delete_item></EventTableDelete>
-                                           </div>
-                                        </div>
-                                </TableCell>
-                            </TableRow>
+                        {
+                            let domain = event.domain.clone();
+                            let title = event.title.clone();
+                            let url = event.url.clone();
+                            let description = event.description.clone();
+                            view!{
+                                <TableRow>
+                                    <TableCell>{{domain}}</TableCell>
+                                    <TableCell>{{title}}</TableCell>
+                                    <TableCell><Link href=url.clone()>{{url}}</Link></TableCell>
+                                    <TableCell>{{description}}</TableCell>
+                                    <TableCell>
+                                            <div class="basis-1/12 flex items-center justify-center">
+                                               <div class="flex flex-row-reverse space-x-4 space-x-reverse">
+                                                    <EventTableEdit event={event.clone()} on_click=edit_item></EventTableEdit>
+                                                    <EventTableDelete event={event.clone()} on_click=delete_item></EventTableDelete>
+                                               </div>
+                                            </div>
+                                    </TableCell>
+                                </TableRow>
+                            }
+                        }
                          </For>
                       </TableBody>
                       <tfoot>
                         <Flex>
-                        <Pagination page page_count on:click = move |event| {fire_refresh();} />
+                        <Pagination page page_count on:click = move |_event| {fire_refresh();} />
                         <Select value=max_size default_value="10" on:change = move |_event| {fire_refresh();} >
                             <option>"10"</option>
                             <option>"50"</option>
@@ -142,6 +174,9 @@ pub fn EventTable() -> impl IntoView {
                   </Table>
                 }})}
               </Suspense>
+            <Show when = move || show_modal.get()>
+                <EventTableModal meetup_url=meetup_url_select on_close_modal=close_modal on_cancel_modal=cancel_modal/>
+            </Show>
           </div>
       }
 }

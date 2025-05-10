@@ -3,6 +3,7 @@ use crate::model::event::Event;
 use crate::model::filter::Filter;
 use graphql_client::{reqwest::post_graphql, GraphQLQuery};
 use ::reqwest::Client;
+use crate::graphql::meetup_url_graphql::meet_up_url_upsert_mutation::UpsertMeetupUrl;
 
 #[derive(GraphQLQuery)]
 #[graphql(
@@ -16,7 +17,14 @@ pub struct MeetUpUrlQuery;
     schema_path = "graphql/schema.graphql",
     query_path = "graphql/meetup_url.graphql",
 )]
-pub struct MeetUpUrlMutation;
+pub struct MeetUpUrlDeleteMutation;
+
+#[derive(GraphQLQuery)]
+#[graphql(
+    schema_path = "graphql/schema.graphql",
+    query_path = "graphql/meetup_url.graphql",
+)]
+pub struct MeetUpUrlUpsertMutation;
 
 pub async fn fetch_meetup_url_data(filter: Filter) -> (Vec<Event>, i64) {
     let client = Client::builder().build().unwrap();
@@ -62,16 +70,30 @@ pub async fn fetch_meetup_url_data(filter: Filter) -> (Vec<Event>, i64) {
 pub async fn delete_meetup_url_by_uuid_id(uuid: String) {
     let client = Client::builder().build().unwrap();
     let endpoint = "http://localhost:8080/graphql";
-
-
-    let variables = meet_up_url_mutation::Variables {
+    
+    let variables = meet_up_url_delete_mutation::Variables {
         id: uuid,
     };
 
     // Await the GraphQL request
-    let _response = post_graphql::<MeetUpUrlMutation, _>(&client, endpoint, variables)
+    let _response = post_graphql::<MeetUpUrlDeleteMutation, _>(&client, endpoint, variables)
         .await
         .expect("Failed to execute GraphQL query");
+}
+
+fn insert_meetup_event() {
+    let client = Client::builder().build().unwrap();
+    let endpoint = "http://localhost:8080/graphql";
+    
+    let variables = meet_up_url_upsert_mutation::Variables {
+        upsert_meetup_url: UpsertMeetupUrl {
+            uri_uuid : None,
+            url : "".to_string(),
+            host : "".to_string(),
+            title : "".to_string(),
+            auto_descr : "".to_string()
+        }
+    };
 }
 
 fn meetup_url_to_event(data: Vec<MeetUpUrlQueryMeetupUrlListResult>) -> Vec<Event> {

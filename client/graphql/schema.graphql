@@ -10,6 +10,8 @@ type QueryRoot {
 
 type MutationRoot {
     deleteMeetupUrl(id: String!): Int!
+    insertMeetupUrl(meetupUrl: UpsertMeetupUrl!): MeetupUrl!
+    updateMeetupUrl(meetupUrl: UpsertMeetupUrl!): MeetupUrl!
 }
 
 type MeetupUrlResponse {
@@ -30,6 +32,13 @@ enum MeetupUrlSort {
     DESCRIPTION
 }
 
+input UpsertMeetupUrl {
+    uriUuid: String
+    url: String!
+    host: String!
+    title: String!
+    autoDescr: String!
+}
 
 input MeetupUrlFilter {
     domain: String

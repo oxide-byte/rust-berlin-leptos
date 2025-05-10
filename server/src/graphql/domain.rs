@@ -29,7 +29,7 @@ pub struct Pagination {
     pub size: Option<i32>,
 }
 
-#[derive(GraphQLObject, Debug, Clone)]
+#[derive(GraphQLObject, Debug, Clone, Default)]
 pub struct MeetupUrl {
     pub uri_uuid: String,
     pub url: String,
@@ -67,4 +67,13 @@ pub struct MeetupUrlCount {
 #[derive(GraphQLObject)]
 pub struct ClockBox {
     pub clock: String,
+}
+
+#[derive(GraphQLInputObject, Debug, Clone)]
+pub struct UpsertMeetupUrl {
+    pub uri_uuid: Option<String>,
+    pub url: String,
+    pub host: String,
+    pub title: String,
+    pub auto_descr: String
 }

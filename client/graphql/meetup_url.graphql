@@ -18,6 +18,15 @@ query MeetUpUrlQuery($filter: MeetupUrlFilter!) {
     }
 }
 
-mutation MeetUpUrlMutation($id: String!) {
+mutation MeetUpUrlDeleteMutation($id: String!) {
     deleteMeetupUrl(id: $id)
+}
+
+mutation MeetUpUrlUpsertMutation($upsertMeetupUrl: UpsertMeetupUrl!) {
+    updateMeetupUrl(meetupUrl: $upsertMeetupUrl) {
+        uriUuid
+    }
+    insertMeetupUrl(meetupUrl: $upsertMeetupUrl) {
+        uriUuid
+    }
 }
