@@ -1,13 +1,15 @@
-# Rust - Berlin Clone
+# Rust - Berlin Hack and Learn Challenge
 
 ## Purpose
 
-This implementation is a clone implementation of the Rust UserGroup
-**Rust Hack and Learn** in Berlin of the implementation: https://github.com/andreasklostermaier/halreslib (Original).
+This implementation is a adaptation of the Rust UserGroup **Rust Hack and Learn** Berlin 
+challenge: https://github.com/andreasklostermaier/halreslib in different Frameworks.
 
-Link to the group: https://berline.rs/
+My choice **Leptos** as Frontend.
 
-Even whe most of features are implemented and functional, there is still some work in progress...
+Link to the meetup group: https://berline.rs/
+
+Even whe most of features are implemented and functional, there is still room for progress...
 
 ## Implementation
 
@@ -17,8 +19,8 @@ The Frameworks in use:
 
 Frontend:
 
-* Leptos 0.7.8
-* Thaw 0.4.6
+* Leptos 0.8.2
+* Thaw 0.5.0-Beta
 * Tailwind 4.0
 * GraphQL Query + Mutation + Subscription
 
@@ -67,6 +69,35 @@ for the links as the wasm file:
 Example:
 
 href="rust-berlin-leptos-7a6a9f219c87d073.js" --> href="/web/rust-berlin-leptos-7a6a9f219c87d073.js"
+
+## Starting the Backend:
+
+```bash
+cd server
+cargo run
+```
+
+The different links on the Backend side:
+
+```text
+Server on:        http://127.0.0.1:8080
+Leptos client on: http://127.0.0.1:8080/web
+Graphiql on:      http://127.0.0.1:8080/graphiql
+Playground on:    http://127.0.0.1:8080/playground
+```
+
+## Improvements
+
+- Review SurrealDB specially for SQL Injection and Query Builder
+- Review and Optimize code for removing .clone()
+- Review and Optimize Signals
+- Review and Optimize Component Communication
+- Fixing bugs ;-)
+- ...
+
+## Features to plan:
+
+- Add a Security Layer 
 
 ## Links
 

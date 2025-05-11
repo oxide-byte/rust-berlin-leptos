@@ -1,4 +1,4 @@
-use crate::component::clock_component::ClockComponent;
+use crate::component::ClockComponent;
 use leptos::prelude::*;
 
 #[component]

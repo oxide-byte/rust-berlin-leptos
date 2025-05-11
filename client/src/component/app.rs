@@ -1,7 +1,4 @@
-use crate::component::banner::Banner;
-use crate::component::event_table::EventTable;
-use crate::component::footer::Footer;
-use crate::component::navigation_bar::NavigationBar;
+use crate::component::{Banner, EventTable, Footer, NavigationBar};
 use leptos::prelude::*;
 
 #[component]

@@ -1,11 +1,13 @@
-use crate::component::event_table_delete::EventTableDelete;
-use crate::component::event_table_edit::EventTableEdit;
-use crate::component::event_table_modal::EventTableModal;
-use crate::graphql::meetup_url_graphql::fetch_meetup_url_data;
-use crate::graphql::meetup_url_graphql::{delete_meetup_url_by_uuid_id, insert_meetup_event, update_meetup_event};
-use crate::model::event::Event;
-use crate::model::filter::Filter;
-use crate::model::meetup_url_edit::MeetupUrlEdit;
+use crate::component::{EventTableDelete,
+                       EventTableEdit,
+                       EventTableModal,
+};
+use crate::graphql::{delete_meetup_url_by_uuid_id,
+                     fetch_meetup_url_data,
+                     insert_meetup_event,
+                     update_meetup_event,
+};
+use crate::model::{Event, Filter, MeetupUrlEdit};
 use leptos::logging::log;
 use leptos::prelude::*;
 use thaw::*;
@@ -14,8 +16,7 @@ use thaw::*;
 pub fn EventTable() -> impl IntoView {
     let show_modal = RwSignal::new(false);
     let meetup_url_select = RwSignal::new(MeetupUrlEdit::default());
-    let page = RwSignal::new(0 as usize);
-    let page_count = RwSignal::new(3 as usize);
+    let page = RwSignal::new(1 as usize);
     let max_size = RwSignal::new("10".to_string());
     let filter_domain = RwSignal::new(String::from(""));
     let filter_title = RwSignal::new(String::from(""));
@@ -69,6 +70,15 @@ pub fn EventTable() -> impl IntoView {
             fire_refresh();
         });
     };
+
+    fn get_pages(page_size: RwSignal<String>, items: i64) -> impl Into<Signal<usize>> + Sized {
+        if page_size.get() == "ALL" {
+            0
+        } else {
+            let ps = page_size.get().parse::<i64>().unwrap();
+            items.div_ceil(ps) as usize
+        }
+    }
 
     let close_modal = move |item: MeetupUrlEdit| {
         if item.uri_uuid.is_none() {
@@ -178,7 +188,7 @@ pub fn EventTable() -> impl IntoView {
                       </TableBody>
                       <tfoot>
                         <Flex>
-                        <Pagination page page_count on:click = move |_event| {fire_refresh();} />
+                        <Pagination page page_count=get_pages(max_size, count) on:click = move |_event| {fire_refresh();} />
                         <Select value=max_size default_value="10" on:change = move |_event| {fire_refresh();} >
                             <option>"10"</option>
                             <option>"50"</option>

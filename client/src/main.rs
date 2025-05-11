@@ -1,8 +1,10 @@
+#![feature(int_roundings)]
+
 mod component;
 mod model;
 mod graphql;
 
-use crate::component::app::App;
+use crate::component::App;
 use leptos::prelude::*;
 use thaw::*;
 

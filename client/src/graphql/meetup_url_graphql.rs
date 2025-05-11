@@ -1,9 +1,9 @@
 use crate::graphql::meetup_url_graphql::meetup_url_insert_mutation::UpsertMeetupUrl as InsertMeetupUrl;
 use crate::graphql::meetup_url_graphql::meetup_url_query::MeetupUrlQueryMeetupUrlListResult;
 use crate::graphql::meetup_url_graphql::meetup_url_update_mutation::UpsertMeetupUrl as UpdateMeetupUrl;
-use crate::model::event::Event;
-use crate::model::filter::Filter;
-use crate::model::meetup_url_edit::MeetupUrlEdit;
+use crate::model::Event;
+use crate::model::Filter;
+use crate::model::MeetupUrlEdit;
 use graphql_client::{reqwest::post_graphql, GraphQLQuery};
 use ::reqwest::Client;
 

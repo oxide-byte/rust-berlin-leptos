@@ -1,4 +1,4 @@
-use crate::model::event::Event;
+use crate::model::Event;
 use leptos::prelude::*;
 
 #[component]

@@ -1,4 +1,4 @@
-use crate::model::meetup_url_edit::MeetupUrlEdit;
+use crate::model::MeetupUrlEdit;
 use leptos::html::Input;
 use leptos::prelude::*;
 
