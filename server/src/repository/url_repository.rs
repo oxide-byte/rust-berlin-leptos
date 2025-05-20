@@ -205,11 +205,9 @@ fn query_builder(filter: MeetupUrlFilter, pagination: bool) -> String {
 
     if pagination {
         if let Some(page) = filter.pagination {
-            if let Some(current) = page.current {
-                cond = format!(" {} START AT {}", cond, current)
-            }
-            if let Some(size) = page.size {
-                cond = format!(" {} LIMIT BY {}", cond, size)
+            if let Some(current) = page.current && let Some(size) = page.size {
+                cond = format!(" {} START AT {}", cond, current * size);
+                cond = format!(" {} LIMIT BY {}", cond, size);
             }
         }
     }

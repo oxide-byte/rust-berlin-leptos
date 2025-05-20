@@ -3471,9 +3471,9 @@ checksum = "13c2bddecc57b384dee18652358fb23172facb8a2c51ccc10d74c157bdea3292"
 
 [[package]]
 name = "surrealdb"
-version = "2.3.0"
+version = "2.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "8b9f7f8154fa85c96e9a3339477512b3249e4bbfd503b122a867e8f3abdad456"
+checksum = "12a5a2d3f0d40d8b0bc2e3a327663c0cdffe7d35508ccabc810dab8281cf251d"
 dependencies = [
  "arrayvec",
  "async-channel",
@@ -3513,9 +3513,9 @@ dependencies = [
 
 [[package]]
 name = "surrealdb-core"
-version = "2.3.0"
+version = "2.3.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6ec1aa60b00aff1958e8b56130398d531f403d88379987bd3fa5e368f92eac5d"
+checksum = "032f20c01cf3a5569f47c857da280abb7b6ff1e443bf58b993c3c28d2d802859"
 dependencies = [
  "addr",
  "ahash 0.8.11",
@@ -3800,9 +3800,9 @@ checksum = "1f3ccbac311fea05f86f61904b462b55fb3df8837a366dfc601a0161d0532f20"
 
 [[package]]
 name = "tokio"
-version = "1.44.2"
+version = "1.45.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e6b88822cbe49de4185e3a4cbf8321dd487cf5fe0c5c65695fef6346371e9c48"
+checksum = "2513ca694ef9ede0fb23fe71a4ee4107cb102b9dc1930f6d0fd77aae068ae165"
 dependencies = [
  "backtrace",
  "bytes",
@@ -3923,9 +3923,9 @@ dependencies = [
 
 [[package]]
 name = "tower-http"
-version = "0.6.2"
+version = "0.6.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "403fa3b783d4b626a8ad51d766ab03cb6d2dbfc46b1c5d4448395e6628dc9697"
+checksum = "0fdb0c213ca27a9f57ab69ddb290fd80d970922355b83ae380b395d3986b8a2e"
 dependencies = [
  "bitflags",
  "bytes",

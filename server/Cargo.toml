@@ -5,8 +5,8 @@ edition = "2024"
 license = "MIT"
 
 [dependencies]
-surrealdb = { version = "2.3.0" }
-tokio = { version = "1.44.2", features = ["macros", "rt-multi-thread"] }
+surrealdb = { version = "2.3.2" }
+tokio = { version = "1.45.0", features = ["macros", "rt-multi-thread"] }
 tokio-stream = "0.1.17"
 serde = { version = "1.0.219", features = ["derive"] }
 serde_json = "1.0.140"
@@ -18,7 +18,7 @@ juniper_axum = { version = "0.2.0", features = ["subscriptions"] }
 juniper_graphql_ws = { version = "0.4.0", features = ["graphql-transport-ws", "graphql-ws"] }
 tracing-subscriber = "0.3.19"
 tower = { version = "0.5.2" }
-tower-http = { version = "0.6.2", features = ["fs", "cors"] }
+tower-http = { version = "0.6.4", features = ["fs", "cors"] }
 tracing = "0.1.41"
 
 chrono = { version = "0.4.41", features = ["serde"] }

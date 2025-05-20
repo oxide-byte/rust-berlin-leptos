@@ -41,7 +41,7 @@ pub fn EventTable() -> impl IntoView {
             new_filter.description = Some(filter_description.get());
         };
         if max_size.get() != "ALL" {
-            new_filter.page = Some(page.get() as i64);
+            new_filter.page = Some((page.get() - 1) as i64);
             new_filter.size = Some(max_size.get().parse::<i64>().unwrap());
         }
         set_filter.set(new_filter);
@@ -172,7 +172,9 @@ pub fn EventTable() -> impl IntoView {
                                     <TableCell>{{domain}}</TableCell>
                                     <TableCell>{{title}}</TableCell>
                                     <TableCell><Link href=url.clone()>{{url}}</Link></TableCell>
-                                    <TableCell>{{description}}</TableCell>
+                                    <TableCell>
+                                        <Textarea size=TextareaSize::Large resize=TextareaResize::Vertical value=description/>
+                                    </TableCell>
                                     <TableCell>
                                             <div class="basis-1/12 flex items-center justify-center">
                                                <div class="flex flex-row-reverse space-x-4 space-x-reverse">
@@ -189,10 +191,10 @@ pub fn EventTable() -> impl IntoView {
                       <tfoot>
                         <Flex>
                         <Pagination page page_count=get_pages(max_size, count) on:click = move |_event| {fire_refresh();} />
-                        <Select value=max_size default_value="10" on:change = move |_event| {fire_refresh();} >
-                            <option>"10"</option>
-                            <option>"50"</option>
-                            <option>"ALL"</option>
+                        <Select value=max_size on:change = move |_event| {fire_refresh();} >
+                            <option>10</option>
+                            <option>50</option>
+                            <option>ALL</option>
                         </Select>
                         </Flex>
                       </tfoot>

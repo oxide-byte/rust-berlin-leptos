@@ -58,7 +58,7 @@ trunk serve --open
 ## Build
 
 ```bash
-trunk build --release
+trunk build --release --public-url "/web"
 ```
 
 The files generated in the client folder /dist can be moved on the
