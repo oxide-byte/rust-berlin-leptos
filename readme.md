@@ -19,7 +19,7 @@ The Frameworks in use:
 
 Frontend:
 
-* Leptos 0.8.2
+* Leptos 0.8.3
 * Thaw 0.5.0-Beta
 * Tailwind 4.0
 * GraphQL Query + Mutation + Subscription
