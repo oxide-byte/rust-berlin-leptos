@@ -5,16 +5,16 @@ edition = "2024"
 license = "MIT"
 
 [dependencies]
-leptos = { version = "0.8.5", features = ["csr"] }
+leptos = { version = "0.8.8", features = ["csr"] }
 thaw = { version = "0.5.0-beta", features = ["csr"] }
-uuid = { version = "1.17.0", features = ["v4"] }
+uuid = { version = "1.18.0", features = ["v4"] }
 chrono = { version = "0.4.41", features = ["serde", "wasm-bindgen"] }
 
 graphql_client = { version = "0.14.0", features = ["reqwest"] }
 # reqwest 12.x not compatible with graphql_client
 reqwest = "0.11.27"
 serde = { version = "1.0.219", features = ["derive"] }
-serde_json = "1.0.140"
+serde_json = "1.0.143"
 futures = "0.3.31"
 ws_stream_wasm = "0.7.5"
 wasm-bindgen-futures = "0.4.50"
