@@ -5,20 +5,20 @@ edition = "2024"
 license = "MIT"
 
 [dependencies]
-surrealdb = { version = "2.3.7" }
-tokio = { version = "1.47.1", features = ["macros", "rt-multi-thread"] }
+surrealdb = { version = "2.4.0" }
+tokio = { version = "1.48.0", features = ["macros", "rt-multi-thread"] }
 tokio-stream = "0.1.17"
-serde = { version = "1.0.219", features = ["derive"] }
-serde_json = "1.0.143"
-axum = { version = "0.8.4", features = ["http1", "macros", "tokio"] }
+serde = { version = "1.0.228", features = ["derive"] }
+serde_json = "1.0.145"
+axum = { version = "0.8.7", features = ["http1", "macros", "tokio"] }
 
 futures = { version = "0.3.31" }
 juniper = { version = "0.16.2", default-features = false }
 juniper_axum = { version = "0.2.0", features = ["subscriptions"] }
 juniper_graphql_ws = { version = "0.4.0", features = ["graphql-transport-ws", "graphql-ws"] }
-tracing-subscriber = "0.3.19"
+tracing-subscriber = "0.3.20"
 tower = { version = "0.5.2" }
-tower-http = { version = "0.6.6", features = ["fs", "cors"] }
+tower-http = { version = "0.6.7", features = ["fs", "cors"] }
 tracing = "0.1.41"
 
 chrono = { version = "0.4.41", features = ["serde"] }
