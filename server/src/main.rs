@@ -19,7 +19,7 @@ use tower::ServiceBuilder;
 use tower_http::cors::{Any, CorsLayer};
 use tower_http::services::ServeDir;
 
-pub type Schema = RootNode<'static, Query, Mutation, Subscription>;
+pub type Schema = RootNode<Query, Mutation, Subscription>;
 
 async fn custom_graphql(
     Extension(schema): Extension<Arc<Schema>>,

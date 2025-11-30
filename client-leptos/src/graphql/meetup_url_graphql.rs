@@ -4,8 +4,8 @@ use crate::graphql::meetup_url_graphql::meetup_url_update_mutation::UpsertMeetup
 use crate::model::Event;
 use crate::model::Filter;
 use crate::model::MeetupUrlEdit;
-use graphql_client::{reqwest::post_graphql, GraphQLQuery};
-use ::reqwest::Client;
+use graphql_client::GraphQLQuery;
+use reqwest::Client;
 
 #[derive(GraphQLQuery)]
 #[graphql(
@@ -35,9 +35,10 @@ pub struct MeetupUrlInsertMutation;
 )]
 pub struct MeetupUrlUpdateMutation;
 
+const ENDPOINT: &str = "http://localhost:8080/graphql";
+
 pub async fn fetch_meetup_url_data(filter: Filter) -> (Vec<Event>, i64) {
     let client = Client::builder().build().unwrap();
-    let endpoint = "http://localhost:8080/graphql";
 
     let page = if filter.page.is_none() {
         None
@@ -57,14 +58,21 @@ pub async fn fetch_meetup_url_data(filter: Filter) -> (Vec<Event>, i64) {
         sort: None,
     };
 
-    let variables = meetup_url_query::Variables {
-        filter,
-    };
+    let variables = meetup_url_query::Variables { filter };
 
-    // Await the GraphQL request
-    let response = post_graphql::<MeetupUrlQuery, _>(&client, endpoint, variables)
+    // Build GraphQL request body and send via reqwest 0.12
+    let request_body = MeetupUrlQuery::build_query(variables);
+    let http_resp = client
+        .post(ENDPOINT)
+        .json(&request_body)
+        .send()
         .await
-        .expect("Failed to execute GraphQL query");
+        .expect("Failed to send GraphQL HTTP request");
+
+    let response: graphql_client::Response<meetup_url_query::ResponseData> = http_resp
+        .json()
+        .await
+        .expect("Failed to deserialize GraphQL response");
 
     if let Some(data) = response.data {
         (
@@ -78,21 +86,20 @@ pub async fn fetch_meetup_url_data(filter: Filter) -> (Vec<Event>, i64) {
 
 pub async fn delete_meetup_url_by_uuid_id(uuid: String) {
     let client = Client::builder().build().unwrap();
-    let endpoint = "http://localhost:8080/graphql";
 
-    let variables = meetup_url_delete_mutation::Variables {
-        id: uuid,
-    };
+    let variables = meetup_url_delete_mutation::Variables { id: uuid };
 
-    // Await the GraphQL request
-    let _response = post_graphql::<MeetupUrlDeleteMutation, _>(&client, endpoint, variables)
+    let request_body = MeetupUrlDeleteMutation::build_query(variables);
+    let _http_resp = client
+        .post(ENDPOINT)
+        .json(&request_body)
+        .send()
         .await
-        .expect("Failed to execute GraphQL query");
+        .expect("Failed to execute GraphQL delete mutation");
 }
 
 pub async fn insert_meetup_event(item: MeetupUrlEdit) {
     let client = Client::builder().build().unwrap();
-    let endpoint = "http://localhost:8080/graphql";
 
     let variables = meetup_url_insert_mutation::Variables {
         upsert_meetup_url: InsertMeetupUrl {
@@ -101,18 +108,20 @@ pub async fn insert_meetup_event(item: MeetupUrlEdit) {
             host: item.domain.unwrap(),
             title: item.title.unwrap(),
             auto_descr: item.description.unwrap(),
-        }
+        },
     };
 
-    // Await the GraphQL request
-    let _response = post_graphql::<MeetupUrlInsertMutation, _>(&client, endpoint, variables)
+    let request_body = MeetupUrlInsertMutation::build_query(variables);
+    let _http_resp = client
+        .post(ENDPOINT)
+        .json(&request_body)
+        .send()
         .await
-        .expect("Failed to execute GraphQL query");
+        .expect("Failed to execute GraphQL insert mutation");
 }
 
 pub async fn update_meetup_event(item: MeetupUrlEdit) {
     let client = Client::builder().build().unwrap();
-    let endpoint = "http://localhost:8080/graphql";
 
     let variables = meetup_url_update_mutation::Variables {
         upsert_meetup_url: UpdateMeetupUrl {
@@ -121,13 +130,16 @@ pub async fn update_meetup_event(item: MeetupUrlEdit) {
             host: item.domain.unwrap(),
             title: item.title.unwrap(),
             auto_descr: item.description.unwrap(),
-        }
+        },
     };
 
-    // Await the GraphQL request
-    let _response = post_graphql::<MeetupUrlUpdateMutation, _>(&client, endpoint, variables)
+    let request_body = MeetupUrlUpdateMutation::build_query(variables);
+    let _http_resp = client
+        .post(ENDPOINT)
+        .json(&request_body)
+        .send()
         .await
-        .expect("Failed to execute GraphQL query");
+        .expect("Failed to execute GraphQL update mutation");
 }
 
 fn meetup_url_to_event(data: Vec<MeetupUrlQueryMeetupUrlListResult>) -> Vec<Event> {

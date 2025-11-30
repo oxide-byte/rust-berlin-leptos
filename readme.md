@@ -113,4 +113,6 @@ For playing with Tailwind:
 
 https://play.tailwindcss.com/
 
-![alt text](docs/screenshot.png "screenshot")
+![alt text](docs/screenshot-leptos.png "screenshot Leptos")
+
+![alt text](docs/screenshot-ratatui.png "screenshot Ratatui")

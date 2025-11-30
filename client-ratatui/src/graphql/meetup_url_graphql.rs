@@ -1,6 +1,6 @@
 use crate::graphql::meetup_url_graphql::meetup_url_query::MeetupUrlQueryMeetupUrlListResult;
 use crate::model::{Event, FilterGraphql};
-use graphql_client::{reqwest::post_graphql, GraphQLQuery};
+use graphql_client::GraphQLQuery;
 use ::reqwest::Client;
 
 #[derive(GraphQLQuery)]
@@ -37,15 +37,16 @@ pub async fn fetch_meetup_url_data_with(client: &Client, filter: &FilterGraphql)
         sort: None,
     };
 
-    let variables = meetup_url_query::Variables {
-        filter,
+    let variables = meetup_url_query::Variables { filter };
+    let request_body = MeetupUrlQuery::build_query(variables);
+    let http_resp = match client.post(ENDPOINT).json(&request_body).send().await {
+        Ok(r) => r,
+        Err(_e) => return (Vec::new(), 0),
     };
 
-    let response = match post_graphql::<MeetupUrlQuery, _>(client, ENDPOINT, variables).await {
-        Ok(resp) => resp,
-        Err(_e) => {
-            return (Vec::new(), 0);
-        }
+    let response: graphql_client::Response<meetup_url_query::ResponseData> = match http_resp.json().await {
+        Ok(json) => json,
+        Err(_e) => return (Vec::new(), 0),
     };
 
     if let Some(data) = response.data {
