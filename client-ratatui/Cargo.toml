@@ -1,0 +1,11 @@
+[package]
+name = "rust-berlin-ratatui"
+version = "0.1.0"
+edition = "2024"
+license = "MIT"
+
+[dependencies]
+color-eyre = "0.6.5"
+crossterm = "0.29.0"
+ratatui = "0.29.0"
+log = "0.4.27"
