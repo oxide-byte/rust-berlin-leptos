@@ -1,0 +1,19 @@
+query MeetupUrlQuery($filter: MeetupUrlFilter!) {
+    meetupUrlList(filter: $filter) {
+        result {
+            uriUuid,
+            url,
+            host,
+            title,
+            autoDescr,
+        },
+        page {
+            current,
+            size,
+            total
+        }
+    },
+    meetupUrlCount(filter: $filter) {
+        count
+    }
+}

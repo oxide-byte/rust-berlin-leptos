@@ -3,18 +3,15 @@ use ratatui::prelude::*;
 use ratatui::widgets::{Block, Borders, Cell, Row, Table, TableState};
 use crate::model::Event;
 
-pub fn render(frame: &mut Frame, area: Rect) {
-    let mut state = TableState::default().with_selected(0);
-
-    let data: Vec<Event> = Vec::new();
-
-    let rows:Vec<Row> = data.iter()
-        .map(|e| Row::new(vec![
-            Cell::new(e.title.clone()),
-            Cell::new(e.domain.clone()),
-            Cell::new(e.url.clone()),
-            Cell::new(e.description.clone()),
-        ])).collect();
+pub fn render(frame: &mut Frame, area: Rect, state: &mut TableState, data: &[Event]) {
+    let rows = data.iter().map(|e| {
+        Row::new(vec![
+            Cell::from(e.title.as_str()),
+            Cell::from(e.domain.as_str()),
+            Cell::from(e.url.as_str()),
+            Cell::from(e.description.as_str()),
+        ])
+    });
 
     let header = ["TITLE", "DOMAIN", "URL", "DESCRIPTION"]
         .into_iter()
@@ -31,8 +28,11 @@ pub fn render(frame: &mut Frame, area: Rect) {
             Constraint::Min(10),
             Constraint::Min(10),
         ],
-    ).header(header)
+    )
+    .header(header)
+    .row_highlight_style(Style::default().add_modifier(Modifier::REVERSED))
+    .highlight_symbol(">> ")
     .block(Block::new().borders(Borders::ALL));
 
-    frame.render_stateful_widget(table, area, &mut state);
+    frame.render_stateful_widget(table, area, state);
 }

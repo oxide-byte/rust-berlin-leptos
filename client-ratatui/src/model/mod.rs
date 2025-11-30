@@ -1,7 +1,7 @@
 mod event;
-mod filter;
-mod meetup_url_edit;
+mod filter_graphql;
+mod filter_form;
 
 pub use event::Event;
-pub use filter::Filter;
-pub use meetup_url_edit::MeetupUrlEdit;
+pub use filter_graphql::FilterGraphql;
+pub use filter_form::FilterForm;

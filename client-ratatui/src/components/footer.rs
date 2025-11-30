@@ -13,6 +13,15 @@ pub fn render(frame: &mut Frame, area: Rect) {
                 .add_modifier(Modifier::BOLD),
         ),
         Span::raw(" Exit"),
+        Span::raw("  "),
+        Span::styled(
+            "(F)",
+            Style::default()
+                .fg(Color::Black)
+                .bg(Color::Yellow)
+                .add_modifier(Modifier::BOLD),
+        ),
+        Span::raw(" Filter"),
     ]);
 
     frame.render_widget(

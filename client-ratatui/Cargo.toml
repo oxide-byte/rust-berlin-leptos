@@ -8,4 +8,10 @@ license = "MIT"
 color-eyre = "0.6.5"
 crossterm = "0.29.0"
 ratatui = "0.29.0"
-log = "0.4.27"
+graphql_client = { version = "0.14.0", features = ["reqwest"] }
+reqwest = "0.11.27"
+serde = { version = "1.0.219", features = ["derive"] }
+serde_json = "1.0.145"
+futures = "0.3.31"
+serde_derive = "1.0.228"
+tokio = { version = "1.42.0", features = ["rt-multi-thread"] }

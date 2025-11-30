@@ -1,5 +1,5 @@
 #[derive(Clone, Debug, Default)]
-pub struct Filter {
+pub struct FilterGraphql {
     pub page: Option<i64>,
     pub size: Option<i64>,
     pub title: Option<String>,

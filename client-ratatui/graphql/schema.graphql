@@ -1,0 +1,60 @@
+schema {
+    query: QueryRoot
+}
+
+type QueryRoot {
+    meetupUrlList(filter: MeetupUrlFilter!): MeetupUrlResponse!
+    meetupUrlCount(filter: MeetupUrlFilter!): MeetupUrlCount!
+}
+
+type MeetupUrlResponse {
+    result: [MeetupUrl!]!
+    page: Page!
+}
+
+type Page {
+    current: Int!
+    size: Int!
+    total: Int!
+}
+
+enum MeetupUrlSort {
+    DOMAIN
+    TITLE
+    URL
+    DESCRIPTION
+}
+
+input MeetupUrlFilter {
+    domain: String
+    title: String
+    url: String
+    description: String
+    pagination: Pagination
+    sort: MeetupUrlSort
+}
+
+input Pagination {
+    current: Int!
+    size: Int!
+}
+
+type MeetupUrlCount {
+    count: Int!
+}
+
+type MeetupUrl {
+    uriUuid: String!
+    url: String!
+    scheme: String!
+    host: String!
+    path: String!
+    liveStatus: String!
+    title: String!
+    autoDescr: String!
+    manDescr: String!
+    creaUser: String!
+    creaTime: String!
+    modiUser: String!
+    modiTime: String!
+}

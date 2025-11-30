@@ -19,7 +19,7 @@ The Frameworks in use:
 
 Frontend:
 
-* Leptos 0.8.3
+* Leptos 0.8.14
 * Thaw 0.5.0-Beta
 * Tailwind 4.0
 * GraphQL Query + Mutation + Subscription
@@ -94,6 +94,10 @@ Playground on:    http://127.0.0.1:8080/playground
 - Review and Optimize Component Communication
 - Fixing bugs ;-)
 - ...
+
+## Bonus
+
+A module for using Ratatui is under client-ratatui
 
 ## Features to plan:
 
