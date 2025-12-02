@@ -1,11 +1,9 @@
-use juniper::{Context, GraphQLEnum, GraphQLInputObject, GraphQLObject};
+use async_graphql::{Enum, InputObject, SimpleObject};
 
 #[derive(Debug, Clone, Default)]
 pub struct ServerContext {}
 
-impl Context for ServerContext {}
-
-#[derive(GraphQLEnum, Debug, Copy, Clone, Eq, PartialEq)]
+#[derive(Enum, Debug, Copy, Clone, Eq, PartialEq)]
 pub enum MeetupUrlSort {
     DOMAIN,
     TITLE,
@@ -13,7 +11,7 @@ pub enum MeetupUrlSort {
     DESCRIPTION,
 }
 
-#[derive(GraphQLInputObject, Debug, Clone)]
+#[derive(InputObject, Debug, Clone)]
 pub struct MeetupUrlFilter {
     pub domain: Option<String>,
     pub title: Option<String>,
@@ -23,13 +21,13 @@ pub struct MeetupUrlFilter {
     pub sort: Option<MeetupUrlSort>,
 }
 
-#[derive(GraphQLInputObject, Debug, Clone)]
+#[derive(InputObject, Debug, Clone)]
 pub struct Pagination {
     pub current: Option<i32>,
     pub size: Option<i32>,
 }
 
-#[derive(GraphQLObject, Debug, Clone, Default)]
+#[derive(SimpleObject, Debug, Clone, Default)]
 pub struct MeetupUrl {
     pub uri_uuid: String,
     pub url: String,
@@ -46,30 +44,30 @@ pub struct MeetupUrl {
     pub modi_time: String,
 }
 
-#[derive(GraphQLObject, Debug, Clone)]
+#[derive(SimpleObject, Debug, Clone)]
 pub struct Page {
     pub current: i32,
     pub size: i32,
     pub total: i32,
 }
 
-#[derive(GraphQLObject, Debug, Clone)]
+#[derive(SimpleObject, Debug, Clone)]
 pub struct MeetupUrlResponse {
     pub result: Vec<MeetupUrl>,
     pub page: Page,
 }
 
-#[derive(GraphQLObject, Debug, Clone)]
+#[derive(SimpleObject, Debug, Clone)]
 pub struct MeetupUrlCount {
     pub count: i32,
 }
 
-#[derive(GraphQLObject)]
+#[derive(SimpleObject)]
 pub struct ClockBox {
     pub clock: String,
 }
 
-#[derive(GraphQLInputObject, Debug, Clone)]
+#[derive(InputObject, Debug, Clone)]
 pub struct UpsertMeetupUrl {
     pub uri_uuid: Option<String>,
     pub url: String,

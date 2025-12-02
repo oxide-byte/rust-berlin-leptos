@@ -14,8 +14,9 @@ pub fn ClockComponent() -> impl IntoView {
     spawn_local(async move {
 
         // Create a WebSocket connection
-        let ws_url = "ws://localhost:8080/subscriptions";
-        let (_ws, mut wsio) = match WsMeta::connect(ws_url, None).await {
+        // async-graphql uses the `graphql-transport-ws` subprotocol for subscriptions
+        let ws_url = "ws://127.0.0.1:8080/subscriptions";
+        let (_ws, mut wsio) = match WsMeta::connect(ws_url, Some(vec!["graphql-transport-ws"])) .await {
             Ok(ws) => ws,
             Err(e) => {
                 write_clock.set(format!("WS connect error: {e}"));

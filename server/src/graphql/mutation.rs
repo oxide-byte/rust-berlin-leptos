@@ -2,19 +2,18 @@ use crate::config::connect_db;
 use crate::graphql::{MeetupUrl, ServerContext, UpsertMeetupUrl};
 use crate::repository::{delete_by_uri_uuid, insert_meetup_url, update_meetup_url};
 use crate::service::init_database;
-use juniper::graphql_object;
+use async_graphql::{Context, Object};
 use tracing::log::{log, Level};
 
 #[derive(Clone, Copy, Debug)]
 pub struct Mutation;
 
-#[graphql_object]
-#[graphql_object(context = ServerContext)]
+#[Object]
 impl Mutation {
-    async fn delete_meetup_url(
-        #[graphql(context)] _server_context: &ServerContext,
-        id: String) -> i32 {
+    async fn delete_meetup_url(&self, ctx: &Context<'_>, id: String) -> i32 {
         log!(Level::Info, "Received Delete request: {:?}", id);
+
+        let _server_context = ctx.data_unchecked::<ServerContext>();
 
         let client = connect_db().await;
 
@@ -27,10 +26,10 @@ impl Mutation {
         }
     }
 
-    async fn insert_meetup_url(
-        #[graphql(context)] _server_context: &ServerContext,
-        meetup_url: UpsertMeetupUrl) -> MeetupUrl {
+    async fn insert_meetup_url(&self, ctx: &Context<'_>, meetup_url: UpsertMeetupUrl) -> MeetupUrl {
         log!(Level::Info, "Received Insert request: {:?}", meetup_url);
+
+        let _server_context = ctx.data_unchecked::<ServerContext>();
 
         let client = connect_db().await;
 
@@ -39,10 +38,10 @@ impl Mutation {
         result.unwrap()
     }
 
-    async fn update_meetup_url(
-        #[graphql(context)] _server_context: &ServerContext,
-        meetup_url: UpsertMeetupUrl) -> MeetupUrl {
+    async fn update_meetup_url(&self, ctx: &Context<'_>, meetup_url: UpsertMeetupUrl) -> MeetupUrl {
         log!(Level::Info, "Received Update request: {:?}", meetup_url);
+
+        let _server_context = ctx.data_unchecked::<ServerContext>();
 
         let client = connect_db().await;
 
@@ -51,9 +50,10 @@ impl Mutation {
         result.unwrap()
     }
 
-    async fn init_database(
-        #[graphql(context)] _server_context: &ServerContext) -> i32 {
+    async fn init_database(&self, ctx: &Context<'_>) -> i32 {
         log!(Level::Info, "Init Database");
+
+        let _server_context = ctx.data_unchecked::<ServerContext>();
 
         let client = connect_db().await;
 

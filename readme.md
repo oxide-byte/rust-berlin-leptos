@@ -28,7 +28,7 @@ Backend:
 
 * Axum 0.8.3
 * Tower 0.5.2 (Static Page Server)
-* Juniper Axum (GraphQL)
+* async-graphql (GraphQL)
 
 Database:
 

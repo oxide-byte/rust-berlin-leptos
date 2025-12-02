@@ -5,28 +5,34 @@ mod model;
 mod graphql;
 
 use crate::graphql::{Mutation, Query, ServerContext, Subscription};
-use axum::routing::{get, on, MethodFilter};
+use axum::routing::{get, post, get_service};
 use axum::{Extension, Router};
-use juniper::RootNode;
-use juniper_axum::extract::JuniperRequest;
-use juniper_axum::response::JuniperResponse;
-use juniper_axum::{graphiql, playground, ws};
-use juniper_graphql_ws::ConnectionConfig;
+use async_graphql::http::{GraphiQLSource, playground_source, GraphQLPlaygroundConfig};
+use async_graphql::Schema as AsyncSchema;
+use async_graphql_axum::{GraphQLRequest, GraphQLResponse, GraphQLSubscription};
 use std::net::SocketAddr;
-use std::sync::Arc;
 use tokio::net::TcpListener;
 use tower::ServiceBuilder;
 use tower_http::cors::{Any, CorsLayer};
 use tower_http::services::ServeDir;
+use axum::response::Html;
 
-pub type Schema = RootNode<Query, Mutation, Subscription>;
+pub type Schema = AsyncSchema<Query, Mutation, Subscription>;
 
-async fn custom_graphql(
-    Extension(schema): Extension<Arc<Schema>>,
-    Extension(server_context): Extension<ServerContext>,
-    JuniperRequest(request): JuniperRequest,
-) -> JuniperResponse {
-    JuniperResponse(request.execute(&*schema, &server_context).await)
+async fn graphql_handler(
+    Extension(schema): Extension<Schema>,
+    req: GraphQLRequest,
+) -> GraphQLResponse {
+    schema.execute(req.into_inner()).await.into()
+}
+
+async fn graphiql() -> Html<String> {
+    Html(GraphiQLSource::build().endpoint("/graphql").subscription_endpoint("/subscriptions").finish())
+}
+
+async fn playground() -> Html<String> {
+    let cfg = GraphQLPlaygroundConfig::new("/graphql").subscription_endpoint("/subscriptions");
+    Html(playground_source(cfg))
 }
 
 #[tokio::main]
@@ -39,17 +45,17 @@ async fn main() {
         .allow_methods([axum::http::Method::GET, axum::http::Method::POST])
         .allow_headers(Any);
 
-    let schema = Schema::new(Query, Mutation, Subscription {});
-
     let server_context = ServerContext::default();
+    let schema = Schema::build(Query, Mutation, Subscription {})
+        .data(server_context.clone())
+        .finish();
 
     let app = Router::new()
-        .route("/graphql", on(MethodFilter::GET.or(MethodFilter::POST), custom_graphql))
-        .route("/subscriptions", get(ws::<Arc<Schema>>(ConnectionConfig::new(server_context.clone()))))
-        .route("/graphiql", get(graphiql("/graphql", "/subscriptions")))
-        .route("/playground", get(playground("/graphql", "/subscriptions")))
-        .layer(Extension(Arc::new(schema)))
-        .layer(Extension(server_context))
+        .route("/graphql", post(graphql_handler).get(graphiql))
+        .route("/subscriptions", get_service(GraphQLSubscription::new(schema.clone())))
+        .route("/graphiql", get(graphiql))
+        .route("/playground", get(playground))
+        .layer(Extension(schema))
         .layer(cors)
         .nest_service(
             "/web",

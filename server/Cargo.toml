@@ -12,10 +12,8 @@ serde = { version = "1.0.228", features = ["derive"] }
 serde_json = "1.0.145"
 axum = { version = "0.8.7", features = ["http1", "macros", "tokio"] }
 
-futures = { version = "0.3.31" }
-juniper = { version = "0.17.0", default-features = false }
-juniper_axum = { version = "0.3.0", features = ["subscriptions"] }
-juniper_graphql_ws = { version = "0.5.0", features = ["graphql-transport-ws", "graphql-ws"] }
+async-graphql = { version = "7.0.17", default-features = false, features = ["tracing", "opentelemetry", "graphiql", "playground"] }
+async-graphql-axum = { version = "7.0.17", default-features = false }
 tracing-subscriber = "0.3.22"
 tower = { version = "0.5.2" }
 tower-http = { version = "0.6.7", features = ["fs", "cors"] }

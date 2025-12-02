@@ -1,19 +1,19 @@
 use crate::config::connect_db;
 use crate::graphql::{MeetupUrlCount, MeetupUrlFilter, MeetupUrlResponse, Page, ServerContext};
 use crate::repository::{count_url, select_url};
-use juniper::graphql_object;
+use async_graphql::{Context, Object};
 use tracing::log::{log, Level};
 
 #[derive(Clone, Copy, Debug)]
 pub struct Query;
 
-#[graphql_object]
-#[graphql_object(context = ServerContext)]
+#[Object]
 impl Query {
-    async fn meetup_url_list(
-        #[graphql(context)] _server_context: &ServerContext,
-        filter: MeetupUrlFilter) -> MeetupUrlResponse {
+    async fn meetup_url_list(&self, ctx: &Context<'_>, filter: MeetupUrlFilter) -> MeetupUrlResponse {
         log!(Level::Info, "Received request query: {:?}", filter);
+
+        // Access shared context if needed
+        let _server_context = ctx.data_unchecked::<ServerContext>();
 
         let client = connect_db().await;
         let result = select_url(&client, filter.clone())
@@ -32,10 +32,10 @@ impl Query {
         }
     }
 
-    async fn meetup_url_count(
-        #[graphql(context)] _server_context: &ServerContext,
-        filter: MeetupUrlFilter) -> MeetupUrlCount {
+    async fn meetup_url_count(&self, ctx: &Context<'_>, filter: MeetupUrlFilter) -> MeetupUrlCount {
         log!(Level::Info, "Received request count: {:?}", filter);
+
+        let _server_context = ctx.data_unchecked::<ServerContext>();
 
         let client = connect_db().await;
         let result = count_url(&client, filter).await;
