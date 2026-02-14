@@ -1,0 +1,27 @@
+GET http://localhost:8080/graphql
+Authorization: Bearer {{jwtToken}}
+
+###
+
+GRAPHQL http://localhost:8080/graphql
+Authorization: Bearer {{jwtToken}}
+
+query GetTestMeetups {
+    meetupUrlList(filter: { url: "test" }) {
+        result {
+            url
+        }
+    }
+}
+
+###
+
+POST http://localhost:8080/graphql
+Authorization: Bearer {{jwtToken}}
+Content-Type: application/json
+
+{
+  "query": "query GetTestMeetups { meetupUrlList(filter: { url: \"test\" }) { result { url } } }"
+}
+
+###

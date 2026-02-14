@@ -1,0 +1,5 @@
+mutation {
+    updateMeetupUrl(meetupUrl: {
+        uriUuid:"UUID_2025-05-09 10:07:47.431280 UTC",
+        url:"URL2",host:"HOST2",title:"TITLE2",autoDescr:"DESC2"}) {uriUuid}
+}

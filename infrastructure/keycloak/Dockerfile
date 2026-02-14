@@ -1,3 +1,3 @@
 # https://github.com/keycloak/keycloak/releases
-FROM quay.io/keycloak/keycloak:22.0.0
+FROM quay.io/keycloak/keycloak:26.5.0
 COPY ./realm.json /opt/keycloak/data/import/realm.json

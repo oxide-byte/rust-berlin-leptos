@@ -5,6 +5,7 @@ use crate::model::Event;
 use crate::model::Filter;
 use crate::model::MeetupUrlEdit;
 use graphql_client::GraphQLQuery;
+use leptos::logging::log;
 use reqwest::Client;
 
 #[derive(GraphQLQuery)]
@@ -35,10 +36,31 @@ pub struct MeetupUrlInsertMutation;
 )]
 pub struct MeetupUrlUpdateMutation;
 
-const ENDPOINT: &str = "http://localhost:8080/graphql";
+use crate::auth_config::GRAPHQL_HTTP_ENDPOINT;
 
-pub async fn fetch_meetup_url_data(filter: Filter) -> (Vec<Event>, i64) {
-    let client = Client::builder().build().unwrap();
+const ENDPOINT: &str = GRAPHQL_HTTP_ENDPOINT;
+
+/// Build a reqwest client with optional Authorization header
+fn build_client_with_auth(token: Option<String>) -> Client {
+    let mut headers = reqwest::header::HeaderMap::new();
+
+    if let Some(token) = token {
+        if let Ok(auth_value) = reqwest::header::HeaderValue::from_str(&format!("Bearer {}", token)) {
+            headers.insert(reqwest::header::AUTHORIZATION, auth_value);
+            log!("[GraphQL] Adding Authorization header with token");
+        }
+    } else {
+        log!("[GraphQL] No token found, sending unauthenticated request");
+    }
+
+    Client::builder()
+        .default_headers(headers)
+        .build()
+        .unwrap()
+}
+
+pub async fn fetch_meetup_url_data(filter: Filter, token: Option<String>) -> (Vec<Event>, i64) {
+    let client = build_client_with_auth(token);
 
     let page = if filter.page.is_none() {
         None
@@ -84,8 +106,8 @@ pub async fn fetch_meetup_url_data(filter: Filter) -> (Vec<Event>, i64) {
     }
 }
 
-pub async fn delete_meetup_url_by_uuid_id(uuid: String) {
-    let client = Client::builder().build().unwrap();
+pub async fn delete_meetup_url_by_uuid_id(uuid: String, token: Option<String>) {
+    let client = build_client_with_auth(token);
 
     let variables = meetup_url_delete_mutation::Variables { id: uuid };
 
@@ -98,8 +120,8 @@ pub async fn delete_meetup_url_by_uuid_id(uuid: String) {
         .expect("Failed to execute GraphQL delete mutation");
 }
 
-pub async fn insert_meetup_event(item: MeetupUrlEdit) {
-    let client = Client::builder().build().unwrap();
+pub async fn insert_meetup_event(item: MeetupUrlEdit, token: Option<String>) {
+    let client = build_client_with_auth(token);
 
     let variables = meetup_url_insert_mutation::Variables {
         upsert_meetup_url: InsertMeetupUrl {
@@ -120,8 +142,8 @@ pub async fn insert_meetup_event(item: MeetupUrlEdit) {
         .expect("Failed to execute GraphQL insert mutation");
 }
 
-pub async fn update_meetup_event(item: MeetupUrlEdit) {
-    let client = Client::builder().build().unwrap();
+pub async fn update_meetup_event(item: MeetupUrlEdit, token: Option<String>) {
+    let client = build_client_with_auth(token);
 
     let variables = meetup_url_update_mutation::Variables {
         upsert_meetup_url: UpdateMeetupUrl {

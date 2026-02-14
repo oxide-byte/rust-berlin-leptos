@@ -1,0 +1,6 @@
+GRAPHQL http://localhost:8080/graphql
+Authorization: Bearer {{jwtToken}}
+
+mutation {
+    initDatabase
+}
