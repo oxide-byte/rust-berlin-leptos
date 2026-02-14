@@ -1,6 +1,7 @@
 use crate::component::{EventTableDelete,
                        EventTableEdit,
                        EventTableModal,
+                       GlobalState,
 };
 use crate::graphql::{delete_meetup_url_by_uuid_id,
                      fetch_meetup_url_data,
@@ -10,10 +11,13 @@ use crate::graphql::{delete_meetup_url_by_uuid_id,
 use crate::model::{Event, Filter, MeetupUrlEdit};
 use leptos::logging::log;
 use leptos::prelude::*;
+use reactive_stores::Store;
 use thaw::*;
+use crate::component::keycloak_catcher::GlobalStateStoreFields;
 
 #[component]
 pub fn EventTable() -> impl IntoView {
+    let state = expect_context::<Store<GlobalState>>();
     let show_modal = RwSignal::new(false);
     let meetup_url_select = RwSignal::new(MeetupUrlEdit::default());
     let page = RwSignal::new(1 as usize);
@@ -24,7 +28,7 @@ pub fn EventTable() -> impl IntoView {
     let filter_description = RwSignal::new(String::from(""));
 
     let (filter, set_filter) = signal(Filter { page: Some(1), size: Some(10), ..Default::default() });
-    let fetch_urls = LocalResource::new(move || load_data(filter.get()));
+    let fetch_urls = LocalResource::new(move || load_data(filter.get(), state.token().get()));
 
     let fire_refresh = move || {
         let mut new_filter = Filter::default();
@@ -65,8 +69,9 @@ pub fn EventTable() -> impl IntoView {
     };
 
     let delete_item = move |item: Event| {
+        let token = state.token().get();
         leptos::task::spawn_local(async move {
-            delete_meetup_url_by_uuid_id(item.id).await;
+            delete_meetup_url_by_uuid_id(item.id, token).await;
             fire_refresh();
         });
     };
@@ -81,16 +86,18 @@ pub fn EventTable() -> impl IntoView {
     }
 
     let close_modal = move |item: MeetupUrlEdit| {
+        let token = state.token().get();
         if item.uri_uuid.is_none() {
             log!("INSERT {:?}", item);
             leptos::task::spawn_local(async move {
-                insert_meetup_event(item).await;
+                insert_meetup_event(item, token).await;
                 fire_refresh();
             });
         } else {
             log!("UPDATE {:?}", item);
+            let token_clone = token.clone();
             leptos::task::spawn_local(async move {
-                update_meetup_event(item).await;
+                update_meetup_event(item, token_clone).await;
                 fire_refresh();
             });
         }
@@ -100,8 +107,8 @@ pub fn EventTable() -> impl IntoView {
         show_modal.set(false);
     };
 
-    async fn load_data(filter: Filter) -> (Vec<Event>, i64) {
-        fetch_meetup_url_data(filter).await
+    async fn load_data(filter: Filter, token: Option<String>) -> (Vec<Event>, i64) {
+        fetch_meetup_url_data(filter, token).await
     }
 
     view! {

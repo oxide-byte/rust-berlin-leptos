@@ -1,0 +1,7 @@
+query GetTestMeetups {
+    meetupUrlList(filter: { url: "test" }) {
+        result {
+            url
+        }
+    }
+}

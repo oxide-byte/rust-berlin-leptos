@@ -1,34 +1,58 @@
+use crate::component::GlobalState;
 use crate::graphql::ClockSubscriptionResponse;
 use futures::{SinkExt, StreamExt};
+use leptos::logging::log;
 use leptos::prelude::*;
+use reactive_stores::Store;
 use uuid::Uuid;
 use wasm_bindgen_futures::spawn_local;
 use ws_stream_wasm::*;
+use crate::component::keycloak_catcher::GlobalStateStoreFields;
 
 // Leptos component
 #[component]
 pub fn ClockComponent() -> impl IntoView {
     let (read_clock, write_clock) = signal(String::from("test"));
-
+    
+    // Get auth token from GlobalState if available - retrieve it outside spawn_local
+    let token = use_context::<Store<GlobalState>>()
+        .and_then(|state| state.token().get());
+    log!("[ClockComponent] token: {:?}", token);
     // Start the GraphQL subscription
     spawn_local(async move {
+        if token.is_some() {
+            log!("[GraphQL Subscription] Using authenticated connection");
+        } else {
+            log!("[GraphQL Subscription] Using unauthenticated connection");
+        }
 
         // Create a WebSocket connection
         // async-graphql uses the `graphql-transport-ws` subprotocol for subscriptions
-        let ws_url = "ws://127.0.0.1:8080/subscriptions";
+        let ws_url = crate::auth_config::GRAPHQL_WS_ENDPOINT;
         let (_ws, mut wsio) = match WsMeta::connect(ws_url, Some(vec!["graphql-transport-ws"])) .await {
             Ok(ws) => ws,
             Err(e) => {
+                log!("WS connect error: {e}");
                 write_clock.set(format!("WS connect error: {e}"));
                 return;
             }
         };
 
-        // Init connection
+        // Init connection with optional authorization token
+        let payload = if let Some(token) = token {
+            serde_json::json!({
+                "Authorization": format!("Bearer {}", token)
+            })
+        } else {
+            serde_json::json!({})
+        };
+
         let conn_init = serde_json::to_string(&serde_json::json!({
-                "type": "connection_init",
-                "payload": {}
-            })).unwrap();
+            "type": "connection_init",
+            "payload": payload
+        })).unwrap();
+
+        log!("[GraphQL Subscription] Connection init: {}", conn_init);
         wsio.send(WsMessage::Text(conn_init)).await.ok();
         wsio.next().await;
 

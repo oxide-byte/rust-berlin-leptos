@@ -12,17 +12,17 @@ pub struct MeetupUrlQuery;
 
 const ENDPOINT: &str = "http://localhost:8080/graphql";
 
-pub async fn fetch_meetup_url_data(filter: &FilterGraphql) -> (Vec<Event>, i64) {
+pub async fn fetch_meetup_url_data(filter: &FilterGraphql, token: Option<&str>) -> (Vec<Event>, i64) {
     let client = match Client::builder().build() {
         Ok(c) => c,
         Err(_e) => {
             return (Vec::new(), 0);
         }
     };
-    fetch_meetup_url_data_with(&client, filter).await
+    fetch_meetup_url_data_with(&client, filter, token).await
 }
 
-pub async fn fetch_meetup_url_data_with(client: &Client, filter: &FilterGraphql) -> (Vec<Event>, i64) {
+pub async fn fetch_meetup_url_data_with(client: &Client, filter: &FilterGraphql, token: Option<&str>) -> (Vec<Event>, i64) {
     let page = match (filter.page, filter.size) {
         (Some(current), Some(size)) => Some(meetup_url_query::Pagination { current, size }),
         _ => None,
@@ -39,7 +39,14 @@ pub async fn fetch_meetup_url_data_with(client: &Client, filter: &FilterGraphql)
 
     let variables = meetup_url_query::Variables { filter };
     let request_body = MeetupUrlQuery::build_query(variables);
-    let http_resp = match client.post(ENDPOINT).json(&request_body).send().await {
+
+    let mut request = client.post(ENDPOINT).json(&request_body);
+
+    if let Some(token) = token {
+        request = request.header("Authorization", format!("Bearer {}", token));
+    }
+
+    let http_resp = match request.send().await {
         Ok(r) => r,
         Err(_e) => return (Vec::new(), 0),
     };

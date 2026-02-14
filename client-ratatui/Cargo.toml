@@ -7,8 +7,9 @@ license = "MIT"
 [dependencies]
 color-eyre = "0.6.5"
 crossterm = "0.29.0"
-ratatui = "0.29.0"
-graphql_client = "0.14.0"
-reqwest = { version = "0.12.24", features = ["json"] }
+ratatui = "0.30.0"
+graphql_client = "0.16.0"
+reqwest = { version = "0.12.28", features = ["json"] }
 serde = { version = "1.0.228", features = ["derive"] }
-tokio = { version = "1.42.0", features = ["rt-multi-thread"] }
+serde_json = "1.0"
+tokio = { version = "1.49.0", features = ["rt-multi-thread"] }
