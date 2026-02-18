@@ -10,10 +10,12 @@ mod event_table_edit;
 mod event_table_modal;
 
 mod keycloak_catcher;
+mod keycloak_access_admin;
 
 pub use app::App;
 pub use keycloak_catcher::GlobalState;
 pub use keycloak_catcher::KeyCloakCatcher;
+pub use keycloak_access_admin::KeycloakAccessAdmin;
 pub use banner::Banner;
 pub use clock_component::ClockComponent;
 pub use event_table::EventTable;

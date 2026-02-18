@@ -104,7 +104,7 @@ pub fn KeyCloakCatcher() -> impl IntoView {
                                         let email = claims.get_email().map(String::from);
                                         let username = claims.get_username().map(String::from);
                                         let name = claims.get_name().map(String::from);
-                                        let roles = claims.get_roles();
+                                        let roles = claims.get_roles(&params.client_id);
 
                                         log!("[KeyCloak] User ID: {}", user_id);
                                         log!("[KeyCloak] Email: {}", email.as_deref().unwrap_or("N/A"));

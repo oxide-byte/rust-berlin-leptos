@@ -1,12 +1,12 @@
 use crate::{
-    storage::{retrieve_pkce_state, store_pkce_state, store_token},
+    storage::{retrieve_pkce_state, store_pkce_state, store_token, clear_auth_data},
     validation::validate_and_extract_claims,
     AuthError, Claims, LoginParams, TokenResponse,
 };
 use url::Url;
 use wasm_bindgen::JsCast;
 use wasm_bindgen_futures::JsFuture;
-use web_sys::window;
+use web_sys::{window, Storage};
 
 /// Build the OAuth 2.0 authorization URL with PKCE parameters
 fn build_authorization_url(
@@ -32,6 +32,11 @@ fn build_authorization_url(
     }
 
     Ok(url.to_string())
+}
+
+pub fn logout() -> Result<(), AuthError> {
+    web_sys::console::log_1(&"[KeyCloak Auth] logout() function called".into());
+    clear_auth_data()
 }
 
 /// Initiate the OAuth login flow

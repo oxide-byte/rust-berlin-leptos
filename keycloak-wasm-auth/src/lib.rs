@@ -1,3 +1,4 @@
+use std::collections::{HashMap, HashSet};
 use serde::{Deserialize, Serialize};
 use thiserror::Error;
 use wasm_bindgen::prelude::*;
@@ -185,13 +186,18 @@ pub struct Claims {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub realm_access: Option<RealmAccess>,
 
-    /// KeyCloak resource access roles
+    /// KeyCloak resource access roles (client_id -> roles)
     #[serde(skip_serializing_if = "Option::is_none")]
-    pub resource_access: Option<serde_json::Value>,
+    pub resource_access: Option<HashMap<String, ClientAccess>>,
 }
 
 #[derive(Debug, Clone, Serialize, Deserialize)]
 pub struct RealmAccess {
+    pub roles: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ClientAccess {
     pub roles: Vec<String>,
 }
 
@@ -222,17 +228,45 @@ impl Claims {
         self.name.as_deref()
     }
 
-    /// Get realm roles
-    pub fn get_roles(&self) -> Vec<String> {
+    pub fn get_roles(&self, client_id: &str) -> Vec<String> {
+        self.get_realm_roles()
+            .into_iter()
+            .chain(self.get_client_roles(client_id))
+            .collect::<HashSet<_>>() // Entfernt Duplikate
+            .into_iter()
+            .collect()
+    }
+
+    /// Get realm-level roles
+    pub fn get_realm_roles(&self) -> Vec<String> {
         self.realm_access
             .as_ref()
             .map(|ra| ra.roles.clone())
             .unwrap_or_default()
     }
 
-    /// Check if user has a specific role
-    pub fn has_role(&self, role: &str) -> bool {
-        self.get_roles().iter().any(|r| r == role)
+    /// Get roles for a specific client from resource_access
+    pub fn get_client_roles(&self, client_id: &str) -> Vec<String> {
+        self.resource_access
+            .as_ref()
+            .and_then(|ra| ra.get(client_id))
+            .map(|ca| ca.roles.clone())
+            .unwrap_or_default()
+    }
+
+    /// Check if user has a specific role in realm or ressources
+    pub fn has_role(&self, client_id: &str, role: &str) -> bool {
+        self.get_roles(client_id).iter().any(|r| r == role)
+    }
+
+    /// Check if user has a specific realm role
+    pub fn has_realm_role(&self, role: &str) -> bool {
+        self.get_realm_roles().iter().any(|r| r == role)
+    }
+
+    /// Check if user has a specific role in a given client
+    pub fn has_client_role(&self, client_id: &str, role: &str) -> bool {
+        self.get_client_roles(client_id).iter().any(|r| r == role)
     }
 }
 
@@ -272,5 +306,5 @@ pub mod validation;
 mod storage;
 
 // Re-export public API
-pub use auth::{login, login_and_get_claims, handle_redirect_callback};
+pub use auth::{login, logout, login_and_get_claims, handle_redirect_callback};
 pub use validation::extract_claims;

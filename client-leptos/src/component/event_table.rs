@@ -1,8 +1,4 @@
-use crate::component::{EventTableDelete,
-                       EventTableEdit,
-                       EventTableModal,
-                       GlobalState,
-};
+use crate::component::{KeycloakAccessAdmin, EventTableDelete, EventTableEdit, EventTableModal, GlobalState};
 use crate::graphql::{delete_meetup_url_by_uuid_id,
                      fetch_meetup_url_data,
                      insert_meetup_event,
@@ -157,7 +153,9 @@ pub fn EventTable() -> impl IntoView {
                           <TableHeaderCell>
                             <div class="relative h-24 w-full">
                                 <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2">
-                                <Button appearance=ButtonAppearance::Primary on_click=add_item>"ADD ENTRY"</Button>
+                                <KeycloakAccessAdmin>
+                                    <Button appearance=ButtonAppearance::Primary on_click=add_item>"ADD ENTRY"</Button>
+                                </KeycloakAccessAdmin>
                                 </div>
                             </div>
                           </TableHeaderCell>

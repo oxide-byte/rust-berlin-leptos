@@ -121,6 +121,16 @@ pub fn LogoutButton(dropdown_open: RwSignal<bool>) -> impl IntoView {
         state.roles().set(Vec::new());
         state.is_authenticated().set(false);
 
+        match keycloak_wasm_auth::logout() {
+            Ok(_) => {
+                log!("[KeyCloak] Logout successful.");
+                // This line won't be reached because login() redirects the browser
+            }
+            Err(e) => {
+                log!("[KeyCloak] ❌ Logout initiation failed: {}", e);
+            }
+        }
+
         log!("[KeyCloak] ✅ Logout successful");
     };
 
