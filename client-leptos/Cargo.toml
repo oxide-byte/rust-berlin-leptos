@@ -5,19 +5,19 @@ edition = "2024"
 license = "MIT"
 
 [dependencies]
-leptos = { version = "0.8.14", features = ["csr"] }
+leptos = { version = "0.8.16", features = ["csr"] }
 reactive_stores = { version = "0.3.1" }
 thaw = { version = "0.5.0-beta", features = ["csr"] }
-uuid = { version = "1.18.1", features = ["v4"] }
+uuid = { version = "1.21.0", features = ["v4"] }
 
-graphql_client = "0.14.0"
+graphql_client = "0.16.0"
 reqwest = { version = "0.12.24", features = ["json"] }
 serde = { version = "1.0.228", features = ["derive"] }
-serde_json = "1.0.145"
-futures = "0.3.31"
+serde_json = "1.0.149"
+futures = "0.3.32"
 ws_stream_wasm = "0.7.5"
-wasm-bindgen-futures = "0.4.56"
-wasm-bindgen = "0.2.106"
+wasm-bindgen-futures = "0.4.58"
+wasm-bindgen = "0.2.108"
 serde_derive = "1.0.228"
 
 # KeyCloak authentication

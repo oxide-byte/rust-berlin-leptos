@@ -70,10 +70,10 @@ async fn fetch_jwks(jwks_uri: &str) -> Result<Vec<JwkKey>, AuthError> {
 }
 
 #[derive(Debug, Deserialize)]
-struct JwtHeader {
-    alg: String,
-    kid: Option<String>,
-    typ: Option<String>,
+pub(crate) struct JwtHeader {
+    pub(crate) alg: String,
+    pub(crate) kid: Option<String>,
+    pub(crate) typ: Option<String>,
 }
 
 /// Extract claims from token WITHOUT full cryptographic validation
@@ -165,27 +165,4 @@ pub async fn validate_and_extract_claims(
     }
 
     Ok(claims)
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_extract_claims_invalid_format() {
-        let result = extract_claims("invalid.token");
-        assert!(result.is_err());
-    }
-
-    #[test]
-    fn test_jwt_header_parse() {
-        let header = r#"{"alg":"RS256","kid":"test-key","typ":"JWT"}"#;
-        let parsed: Result<JwtHeader, _> = serde_json::from_str(header);
-        assert!(parsed.is_ok());
-
-        let h = parsed.unwrap();
-        assert_eq!(h.alg, "RS256");
-        assert_eq!(h.kid, Some("test-key".to_string()));
-        assert_eq!(h.typ, Some("JWT".to_string()));
-    }
 }
