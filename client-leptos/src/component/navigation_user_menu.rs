@@ -3,7 +3,9 @@ use keycloak_wasm_auth::{Challenge, LoginParams};
 use leptos::prelude::*;
 use reactive_stores::Store;
 use leptos::logging::log;
+use thaw::{Button, ButtonAppearance};
 use crate::component::keycloak_catcher::GlobalStateStoreFields;
+use crate::graphql::{init_database};
 
 #[component]
 pub fn NavigationUserMenu() -> impl IntoView {
@@ -41,6 +43,7 @@ pub fn NavigationUserMenu() -> impl IntoView {
                 >
                     <UserInfo/>
                     <LogoutButton dropdown_open=dropdown_open/>
+                    <InitDatabaseButton dropdown_open=dropdown_open/>
                 </Show>
             </div>
         </div>
@@ -143,5 +146,22 @@ pub fn LogoutButton(dropdown_open: RwSignal<bool>) -> impl IntoView {
         >
             "Log Out"
         </button>
+    }
+}
+
+#[component]
+pub fn InitDatabaseButton(dropdown_open: RwSignal<bool>) -> impl IntoView {
+    let state = expect_context::<Store<GlobalState>>();
+    let token = state.token().get();
+
+    let init_database = move |_| {
+        let token_clone = token.clone();
+        leptos::task::spawn_local(async move {
+            init_database(token_clone).await;
+            dropdown_open.set(false);
+        });
+    };
+    view! {
+        <Button appearance=ButtonAppearance::Primary on_click=init_database class="block w-full">"INIT Database"</Button>
     }
 }

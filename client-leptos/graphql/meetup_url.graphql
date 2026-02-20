@@ -33,3 +33,7 @@ mutation MeetupUrlUpdateMutation($upsertMeetupUrl: UpsertMeetupUrl!) {
         uriUuid
     }
 }
+
+mutation InitDatabaseMutation {
+    initDatabase
+}

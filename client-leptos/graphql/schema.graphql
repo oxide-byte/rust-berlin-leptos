@@ -12,6 +12,7 @@ type MutationRoot {
     deleteMeetupUrl(id: String!): Int!
     insertMeetupUrl(meetupUrl: UpsertMeetupUrl!): MeetupUrl!
     updateMeetupUrl(meetupUrl: UpsertMeetupUrl!): MeetupUrl!
+    initDatabase:Int!
 }
 
 type MeetupUrlResponse {

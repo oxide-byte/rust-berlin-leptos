@@ -36,6 +36,13 @@ pub struct MeetupUrlInsertMutation;
 )]
 pub struct MeetupUrlUpdateMutation;
 
+#[derive(GraphQLQuery)]
+#[graphql(
+    schema_path = "graphql/schema.graphql",
+    query_path = "graphql/meetup_url.graphql",
+)]
+pub struct InitDatabaseMutation;
+
 use crate::auth_config::GRAPHQL_HTTP_ENDPOINT;
 
 const ENDPOINT: &str = GRAPHQL_HTTP_ENDPOINT;
@@ -156,6 +163,20 @@ pub async fn update_meetup_event(item: MeetupUrlEdit, token: Option<String>) {
     };
 
     let request_body = MeetupUrlUpdateMutation::build_query(variables);
+    let _http_resp = client
+        .post(ENDPOINT)
+        .json(&request_body)
+        .send()
+        .await
+        .expect("Failed to execute GraphQL update mutation");
+}
+
+pub async fn init_database(token: Option<String>) {
+    let client = build_client_with_auth(token);
+
+    let variables = init_database_mutation::Variables {};
+
+    let request_body = InitDatabaseMutation::build_query(variables);
     let _http_resp = client
         .post(ENDPOINT)
         .json(&request_body)
