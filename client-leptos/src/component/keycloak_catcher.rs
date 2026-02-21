@@ -1,6 +1,7 @@
 use leptos::logging::log;
 use leptos::prelude::*;
 use reactive_stores::{Patch, Store};
+use uuid::Uuid;
 
 #[derive(Clone, Debug, Default, Store, Patch)]
 pub struct GlobalState {
@@ -11,6 +12,7 @@ pub struct GlobalState {
     pub name: Option<String>,
     pub roles: Vec<String>,
     pub is_authenticated: bool,
+    pub refresh_table: String
 }
 
 #[component]
@@ -121,6 +123,9 @@ pub fn KeyCloakCatcher() -> impl IntoView {
                                         state_clone.is_authenticated().patch(true);
 
                                         log!("[KeyCloak] State updated, cleaning URL...");
+
+                                        // Trigger DB Update
+                                        state.refresh_table().patch(Uuid::new_v4().to_string());
 
                                         // Clean up URL by removing query parameters
                                         let _ = window.history().and_then(|h| {

@@ -1,11 +1,13 @@
 use crate::component::GlobalState;
 use keycloak_wasm_auth::{Challenge, LoginParams};
 use leptos::prelude::*;
-use reactive_stores::Store;
+use reactive_stores::{Patch, Store};
 use leptos::logging::log;
 use thaw::{Button, ButtonAppearance};
+use uuid::Uuid;
 use crate::component::keycloak_catcher::GlobalStateStoreFields;
 use crate::graphql::{init_database};
+use crate::component::KeycloakAccessAdmin;
 
 #[component]
 pub fn NavigationUserMenu() -> impl IntoView {
@@ -154,14 +156,18 @@ pub fn InitDatabaseButton(dropdown_open: RwSignal<bool>) -> impl IntoView {
     let state = expect_context::<Store<GlobalState>>();
     let token = state.token().get();
 
-    let init_database = move |_| {
+    let init_database = store_value(move |_| {
         let token_clone = token.clone();
         leptos::task::spawn_local(async move {
             init_database(token_clone).await;
             dropdown_open.set(false);
         });
-    };
+        state.refresh_table().patch(Uuid::new_v4().to_string());
+    });
+
     view! {
-        <Button appearance=ButtonAppearance::Primary on_click=init_database class="block w-full">"INIT Database"</Button>
+        <KeycloakAccessAdmin>
+        <Button appearance=ButtonAppearance::Primary on_click=move |e| init_database.get_value()(e) class="block w-full">"INIT Database"</Button>
+        </KeycloakAccessAdmin>
     }
 }

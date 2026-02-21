@@ -4,6 +4,7 @@ use crate::repository::{delete_by_uri_uuid, insert_meetup_url, update_meetup_url
 use crate::service::init_database;
 use async_graphql::{Context, Object};
 use tracing::log::{log, Level};
+use crate::auth::Claims;
 
 #[derive(Clone, Copy, Debug)]
 pub struct Mutation;
@@ -53,12 +54,17 @@ impl Mutation {
     async fn init_database(&self, ctx: &Context<'_>) -> i32 {
         log!(Level::Info, "Init Database");
 
-        let _server_context = ctx.data_unchecked::<ServerContext>();
+        let is_admin = ctx.data::<Claims>()
+            .map(|c| c.has_role("hackandlearn-client", "ROLE_HNL_ADMIN"))
+            .unwrap_or(false);
 
-        let client = connect_db().await;
-
-        init_database(&client).await;
-
-        1
+        if is_admin {
+            let client = connect_db().await;
+            init_database(&client).await;
+            return 1;
+        } else {
+            log!(Level::Warn, "NOT AUTHORIZED !!!");
+            return 0;
+        }
     }
 }

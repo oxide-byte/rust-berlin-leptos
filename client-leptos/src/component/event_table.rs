@@ -22,6 +22,7 @@ pub fn EventTable() -> impl IntoView {
     let filter_title = RwSignal::new(String::from(""));
     let filter_url = RwSignal::new(String::from(""));
     let filter_description = RwSignal::new(String::from(""));
+    let old_db_trigger = RwSignal::new(String::from(""));
 
     let (filter, set_filter) = signal(Filter { page: Some(1), size: Some(10), ..Default::default() });
     let fetch_urls = LocalResource::new(move || load_data(filter.get(), state.token().get()));
@@ -46,6 +47,14 @@ pub fn EventTable() -> impl IntoView {
         }
         set_filter.set(new_filter);
     };
+
+    Effect::new(move |_| {
+        let db_trigger = state.refresh_table().get();
+        if db_trigger != old_db_trigger.get() {
+            old_db_trigger.set(db_trigger.clone());
+            fire_refresh();
+        }
+    });
 
     let add_item = move |_e| {
         meetup_url_select.set(MeetupUrlEdit::default());
@@ -183,8 +192,10 @@ pub fn EventTable() -> impl IntoView {
                                     <TableCell>
                                             <div class="basis-1/12 flex items-center justify-center">
                                                <div class="flex flex-row-reverse space-x-4 space-x-reverse">
+                                                    <KeycloakAccessAdmin>
                                                     <EventTableEdit event={event.clone()} on_click=edit_item></EventTableEdit>
                                                     <EventTableDelete event={event.clone()} on_click=delete_item></EventTableDelete>
+                                                    </KeycloakAccessAdmin>
                                                </div>
                                             </div>
                                     </TableCell>

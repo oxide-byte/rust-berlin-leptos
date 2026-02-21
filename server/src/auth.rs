@@ -6,8 +6,19 @@ use axum::{
     response::Response,
     http::{StatusCode, header},
 };
+use std::collections::HashMap;
 use std::sync::Arc;
 use tokio::sync::RwLock;
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct RealmAccess {
+    pub roles: Vec<String>,
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize)]
+pub struct ClientAccess {
+    pub roles: Vec<String>,
+}
 
 #[derive(Debug, Serialize, Deserialize, Clone)]
 pub struct Claims {
@@ -15,9 +26,33 @@ pub struct Claims {
     pub exp: usize,
     pub iat: usize,
     pub iss: String,
-    // pub aud: serde_json::Value,
+    pub aud: Option<serde_json::Value>,
     pub preferred_username: Option<String>,
     pub email: Option<String>,
+    pub realm_access: Option<RealmAccess>,
+    pub resource_access: Option<HashMap<String, ClientAccess>>,
+}
+
+impl Claims {
+    pub fn get_realm_roles(&self) -> Vec<String> {
+        self.realm_access
+            .as_ref()
+            .map(|ra| ra.roles.clone())
+            .unwrap_or_default()
+    }
+
+    pub fn get_client_roles(&self, client_id: &str) -> Vec<String> {
+        self.resource_access
+            .as_ref()
+            .and_then(|ra| ra.get(client_id))
+            .map(|ca| ca.roles.clone())
+            .unwrap_or_default()
+    }
+
+    pub fn has_role(&self, client_id: &str, role: &str) -> bool {
+        self.get_realm_roles().iter().any(|r| r == role)
+            || self.get_client_roles(client_id).iter().any(|r| r == role)
+    }
 }
 
 pub struct AuthConfig {
@@ -94,7 +129,7 @@ pub async fn auth_middleware(
             StatusCode::UNAUTHORIZED
         })?;
 
-    req.extensions_mut().insert(axum::Extension(token_data.claims));
+    req.extensions_mut().insert(token_data.claims);
 
     Ok(next.run(req).await)
 }

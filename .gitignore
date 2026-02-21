@@ -4,3 +4,5 @@
 # IDE
 .idea
 *.iml
+.DS_Store
+client-leptos/.DS_Store
