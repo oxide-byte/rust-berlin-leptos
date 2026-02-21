@@ -86,12 +86,22 @@ Graphiql on:      http://127.0.0.1:8080/graphiql
 Playground on:    http://127.0.0.1:8080/playground
 ```
 
+## Security
+
+There are currently 2 users implemented with KeyCloak. 
+
+- admin@demo.com:password
+- user@demo.com:password
+
+![alt text](docs/screenshot-keycloak.png "screenshot Keycloak")
+
 ## Improvements
 
 - Review SurrealDB specially for SQL Injection and Query Builder
 - Review and Optimize code for removing .clone()
 - Review and Optimize Signals
 - Review and Optimize Component Communication
+- Fixing Loging / Refresh actions
 - Fixing bugs ;-)
 - ...
 
