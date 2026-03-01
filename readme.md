@@ -102,6 +102,7 @@ There are currently 2 users implemented with KeyCloak.
 - Review and Optimize Signals
 - Review and Optimize Component Communication
 - Fixing Loging / Refresh actions
+- Fixing Error Handling / Server Authority 401/403
 - Fixing bugs ;-)
 - ...
 

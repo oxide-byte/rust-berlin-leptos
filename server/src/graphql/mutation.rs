@@ -14,6 +14,15 @@ impl Mutation {
     async fn delete_meetup_url(&self, ctx: &Context<'_>, id: String) -> i32 {
         log!(Level::Info, "Received Delete request: {:?}", id);
 
+        let is_admin = ctx.data::<Claims>()
+            .map(|c| c.has_role("hackandlearn-client", "ROLE_HNL_ADMIN"))
+            .unwrap_or(false);
+
+        if !is_admin {
+            log!(Level::Warn, "NOT AUTHORIZED for delete_meetup_url");
+            return 0;
+        }
+
         let _server_context = ctx.data_unchecked::<ServerContext>();
 
         let client = connect_db().await;
@@ -30,6 +39,15 @@ impl Mutation {
     async fn insert_meetup_url(&self, ctx: &Context<'_>, meetup_url: UpsertMeetupUrl) -> MeetupUrl {
         log!(Level::Info, "Received Insert request: {:?}", meetup_url);
 
+        let is_admin = ctx.data::<Claims>()
+            .map(|c| c.has_role("hackandlearn-client", "ROLE_HNL_ADMIN"))
+            .unwrap_or(false);
+
+        if !is_admin {
+            log!(Level::Warn, "NOT AUTHORIZED for insert_meetup_url");
+            return MeetupUrl::default()
+        }
+
         let _server_context = ctx.data_unchecked::<ServerContext>();
 
         let client = connect_db().await;
@@ -41,6 +59,15 @@ impl Mutation {
 
     async fn update_meetup_url(&self, ctx: &Context<'_>, meetup_url: UpsertMeetupUrl) -> MeetupUrl {
         log!(Level::Info, "Received Update request: {:?}", meetup_url);
+
+        let is_admin = ctx.data::<Claims>()
+            .map(|c| c.has_role("hackandlearn-client", "ROLE_HNL_ADMIN"))
+            .unwrap_or(false);
+
+        if !is_admin {
+            log!(Level::Warn, "NOT AUTHORIZED for update_meetup_url");
+            return MeetupUrl::default()
+        }
 
         let _server_context = ctx.data_unchecked::<ServerContext>();
 
@@ -63,7 +90,7 @@ impl Mutation {
             init_database(&client).await;
             return 1;
         } else {
-            log!(Level::Warn, "NOT AUTHORIZED !!!");
+            log!(Level::Warn, "NOT AUTHORIZED for init_database");
             return 0;
         }
     }
