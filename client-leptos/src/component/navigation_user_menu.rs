@@ -1,5 +1,6 @@
+use crate::auth_config;
 use crate::component::GlobalState;
-use keycloak_wasm_auth::{Challenge, LoginParams};
+use keycloak_wasm_auth::{Challenge, LoginParams, LogoutParams};
 use leptos::prelude::*;
 use reactive_stores::{Patch, Store};
 use leptos::logging::log;
@@ -115,28 +116,40 @@ pub fn LogoutButton(dropdown_open: RwSignal<bool>) -> impl IntoView {
 
     let on_logout = move |_| {
         dropdown_open.set(false);
-        log!("[KeyCloak] Logging out...");
+        // Clear local state first
+        state.token().patch(None);
+        state.user_id().patch(None);
+        state.email().patch(None);
+        state.username().patch(None);
+        state.name().patch(None);
+        state.roles().patch(Vec::new());
+        state.is_authenticated().patch(false);
 
-        // Clear authentication state
-        state.token().set(None);
-        state.user_id().set(None);
-        state.email().set(None);
-        state.username().set(None);
-        state.name().set(None);
-        state.roles().set(Vec::new());
-        state.is_authenticated().set(false);
+        // Spawn async task for OIDC logout
+        wasm_bindgen_futures::spawn_local(async move {
+            log!("[KeyCloak] Initiating Keycloak logout...");
 
-        match keycloak_wasm_auth::logout() {
-            Ok(_) => {
-                log!("[KeyCloak] Logout successful.");
-                // This line won't be reached because login() redirects the browser
+            let mut params = LogoutParams::new(auth_config::KEYCLOAK_ISSUER.to_string())
+                .with_post_logout_redirect_uri(auth_config::KEYCLOAK_REDIRECT_URI.to_string());
+
+            // Add ID token hint if available
+            if let Ok(id_token) = keycloak_wasm_auth::retrieve_id_token() {
+                params = params.with_id_token_hint(id_token);
             }
-            Err(e) => {
-                log!("[KeyCloak] ❌ Logout initiation failed: {}", e);
-            }
-        }
 
-        log!("[KeyCloak] ✅ Logout successful");
+            match keycloak_wasm_auth::logout(params).await {
+                Ok(_) => {
+                    log!("[KeyCloak] Logged out successfully");
+                }
+                Err(e) => {
+                    log!("[KeyCloak] ❌ Logout failed: {}", e);
+                    // Fallback to home redirect if OIDC logout fails
+                    if let Some(window) = leptos::web_sys::window() {
+                        let _ = window.location().set_href("/");
+                    }
+                }
+            }
+        });
     };
 
     view! {
