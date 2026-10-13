@@ -169,7 +169,7 @@ pub fn InitDatabaseButton(dropdown_open: RwSignal<bool>) -> impl IntoView {
     let state = expect_context::<Store<GlobalState>>();
     let token = state.token().get();
 
-    let init_database = store_value(move |_| {
+    let init_database = StoredValue::new(move |_| {
         let token_clone = token.clone();
         leptos::task::spawn_local(async move {
             init_database(token_clone).await;

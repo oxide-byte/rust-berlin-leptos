@@ -5,21 +5,21 @@ edition = "2024"
 license = "MIT"
 
 [dependencies]
-surrealdb = { version = "2.6.1" }
-tokio = { version = "1.49.0", features = ["macros", "rt-multi-thread"] }
-tokio-stream = "0.1.18"
-serde = { version = "1.0.228", features = ["derive"] }
-serde_json = "1.0.149"
-axum = { version = "0.8.8", features = ["http1", "macros", "tokio"] }
+surrealdb = { version = "3.3.4" }
+tokio = { version = "1.53.2", features = ["macros", "rt-multi-thread"] }
+tokio-stream = "0.1.19"
+serde = { version = "1.0.229", features = ["derive"] }
+serde_json = "1.0.154"
+axum = { version = "0.8.9", features = ["http1", "macros", "tokio"] }
 
-jsonwebtoken = "9.3.1"
-reqwest = { version = "0.13.2", features = ["json"] }
+jsonwebtoken = { version = "11.1.0", features = ["rust_crypto"] }
+reqwest = { version = "0.13.5", features = ["json"] }
 
-async-graphql = { version = "7.0.17", default-features = false, features = ["tracing", "opentelemetry", "graphiql", "playground"] }
-async-graphql-axum = { version = "7.0.17", default-features = false }
-tracing-subscriber = "0.3.22"
-tower = { version = "0.5.2" }
-tower-http = { version = "0.6.8", features = ["fs", "cors"] }
+async-graphql = { version = "7.2.1", default-features = false, features = ["tracing", "opentelemetry", "graphiql", "playground"] }
+async-graphql-axum = { version = "7.2.1", default-features = false }
+tracing-subscriber = "0.3.23"
+tower = { version = "0.5.3" }
+tower-http = { version = "0.7.1", features = ["fs", "cors"] }
 tracing = "0.1.44"
 
-chrono = { version = "0.4.43", features = ["serde"] }
+chrono = { version = "0.4.45", features = ["serde"] }

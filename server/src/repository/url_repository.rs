@@ -2,31 +2,30 @@ use crate::graphql::MeetupUrlFilter;
 use crate::graphql::{MeetupUrl as GraphMeetupUrl, MeetupUrl, UpsertMeetupUrl};
 use crate::model::MeetupUrl as DbMeetupUrl;
 use chrono::Utc;
-use serde::{Deserialize, Serialize};
 use surrealdb::engine::remote::ws::Client;
-use surrealdb::sql::{Id, Strand, Thing};
-use surrealdb::{Error, Surreal};
+use surrealdb::types::{Error, RecordId, RecordIdKey, SurrealValue};
+use surrealdb::Surreal;
 use tracing::log::{log, Level};
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, SurrealValue)]
 struct Record {
-    id: Thing,
-    uri_uuid: Strand,
-    url: Strand,
-    scheme: Strand,
-    host: Strand,
-    path: Strand,
-    live_status: Strand,
-    title: Strand,
-    auto_descr: Strand,
-    man_descr: Strand,
-    crea_user: Strand,
-    crea_time: Strand,
-    modi_user: Strand,
-    modi_time: Strand,
+    id: RecordId,
+    uri_uuid: String,
+    url: String,
+    scheme: String,
+    host: String,
+    path: String,
+    live_status: String,
+    title: String,
+    auto_descr: String,
+    man_descr: String,
+    crea_user: String,
+    crea_time: String,
+    modi_user: String,
+    modi_time: String,
 }
 
-#[derive(Debug, Serialize, Deserialize)]
+#[derive(Debug, SurrealValue)]
 struct UpdateRecord {
     url: String,
     host: String,
@@ -63,7 +62,7 @@ pub async fn delete_by_uri_uuid(client: &Surreal<Client>, uuid_id: String) -> Re
     let id = find_by_uri_uuid(client, uuid_id).await?;
 
     let _result: Option<Record> = client
-        .delete(("url", id.to_string()))
+        .delete(("url", id))
         .await?;
 
     Ok(())
@@ -109,7 +108,7 @@ pub async fn update_meetup_url(client: &Surreal<Client>, data: UpsertMeetupUrl) 
 
     let record = records.first().unwrap();
 
-    let id = record.id.id.to_raw();
+    let id = key_to_string(&record.id.key);
 
     let update = UpdateRecord {
         url: data.url.clone(),
@@ -140,14 +139,14 @@ pub async fn update_meetup_url(client: &Surreal<Client>, data: UpsertMeetupUrl) 
     Ok(rtn)
 }
 
-pub async fn find_by_uri_uuid(client: &Surreal<Client>, uuid_id: String) -> Result<Id, Error> {
+pub async fn find_by_uri_uuid(client: &Surreal<Client>, uuid_id: String) -> Result<String, Error> {
     let query = format!("SELECT * FROM url WHERE uri_uuid = '{}'", uuid_id);
 
     let records: Vec<Record> = client.query(query).await?.take(0)?;
 
     let record = records.first().unwrap();
 
-    Ok(record.id.id.clone())
+    Ok(key_to_string(&record.id.key))
 }
 
 pub async fn select_url(client: &Surreal<Client>, filter: MeetupUrlFilter) -> Result<Vec<GraphMeetupUrl>, Error> {
@@ -166,21 +165,30 @@ pub async fn select_url(client: &Surreal<Client>, filter: MeetupUrlFilter) -> Re
     Ok(urls)
 }
 
+fn key_to_string(key: &RecordIdKey) -> String {
+    match key {
+        RecordIdKey::String(s) => s.clone(),
+        RecordIdKey::Number(n) => n.to_string(),
+        RecordIdKey::Uuid(u) => u.to_string(),
+        other => format!("{:?}", other),
+    }
+}
+
 fn map_record_to_graph_meetup_url() -> fn(&Record) -> MeetupUrl {
     |x| GraphMeetupUrl {
-        uri_uuid: x.uri_uuid.clone().as_string(),
-        url: x.url.clone().as_string(),
-        scheme: x.scheme.clone().as_string(),
-        host: x.host.clone().as_string(),
-        path: x.path.clone().as_string(),
-        live_status: x.live_status.clone().as_string(),
-        title: x.title.clone().as_string(),
-        auto_descr: x.auto_descr.clone().as_string(),
-        man_descr: x.man_descr.clone().as_string(),
-        crea_user: x.crea_user.clone().as_string(),
-        crea_time: x.crea_time.clone().as_string(),
-        modi_user: x.modi_user.clone().as_string(),
-        modi_time: x.modi_time.clone().as_string(),
+        uri_uuid: x.uri_uuid.clone(),
+        url: x.url.clone(),
+        scheme: x.scheme.clone(),
+        host: x.host.clone(),
+        path: x.path.clone(),
+        live_status: x.live_status.clone(),
+        title: x.title.clone(),
+        auto_descr: x.auto_descr.clone(),
+        man_descr: x.man_descr.clone(),
+        crea_user: x.crea_user.clone(),
+        crea_time: x.crea_time.clone(),
+        modi_user: x.modi_user.clone(),
+        modi_time: x.modi_time.clone(),
     }
 }
 

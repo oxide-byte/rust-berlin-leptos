@@ -18,14 +18,37 @@ Content-Type: application/x-www-form-urlencoded
 
 client_id=hackandlearn-client&username=user@demo.com&password=password&grant_type=password
 
+### CONNECT Admin
+### https://jwt.io/
+
+POST http://localhost:8888/realms/hackandlearn/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id=hackandlearn-client&username=admin@demo.com&password=password&grant_type=password
+
 ###
-### GENERATE NEW KEY AND ADD TO ENVIRONNMENT
+### GENERATE NEW KEY AND ADD TO ENVIRONNMENT FOR USER
 ###
 
 POST http://localhost:8888/realms/hackandlearn/protocol/openid-connect/token
 Content-Type: application/x-www-form-urlencoded
 
 client_id=hackandlearn-client&username=user@demo.com&password=password&grant_type=password
+
+> {%
+    client.global.set("jwtToken", response.body.access_token);
+    client.log(client.global.get("jwtToken"))
+%}
+###
+
+###
+### GENERATE NEW KEY AND ADD TO ENVIRONNMENT FOR ADMIN
+###
+
+POST http://localhost:8888/realms/hackandlearn/protocol/openid-connect/token
+Content-Type: application/x-www-form-urlencoded
+
+client_id=hackandlearn-client&username=admin@demo.com&password=password&grant_type=password
 
 > {%
     client.global.set("jwtToken", response.body.access_token);

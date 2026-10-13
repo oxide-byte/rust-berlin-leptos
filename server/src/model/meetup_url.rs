@@ -1,6 +1,7 @@
 use serde::{Deserialize, Serialize};
+use surrealdb::types::SurrealValue;
 
-#[derive(Serialize, Deserialize, Debug)]
+#[derive(Serialize, Deserialize, Debug, SurrealValue)]
 pub struct MeetupUrl {
     pub uri_uuid: String,
     pub url: String,

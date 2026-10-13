@@ -88,10 +88,10 @@ impl Mutation {
         if is_admin {
             let client = connect_db().await;
             init_database(&client).await;
-            return 1;
+            1
         } else {
             log!(Level::Warn, "NOT AUTHORIZED for init_database");
-            return 0;
+            0
         }
     }
 }
