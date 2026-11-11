@@ -3,7 +3,7 @@ version: '3.8'
 services:
   surrealdb:
     container_name: surrealdb
-    image: surrealdb/surrealdb:v3.3.4
+    image: surrealdb/surrealdb:v4
     ports:
       - 8000:8000
     entrypoint:
@@ -13,6 +13,7 @@ services:
       - root
       - --pass
       - root
+      - memory
 
   keycloak:
     container_name: keycloak
